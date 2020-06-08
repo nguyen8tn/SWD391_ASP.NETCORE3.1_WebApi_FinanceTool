@@ -59,6 +59,7 @@ namespace SWD391
                     ValidateLifetime = true
                 };
             });
+            services.AddRouting(options => options.LowercaseUrls = true);
 
             //--------------------------------------
             services.AddControllers();
