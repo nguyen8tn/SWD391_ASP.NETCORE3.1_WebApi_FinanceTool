@@ -15,6 +15,16 @@ using Microsoft.OpenApi.Models;
 using SWD391.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Builder;
+using SWD391.Models;
+using Microsoft.OData.Edm;
+using Microsoft.Net.Http.Headers;
+using Microsoft.AspNet.OData.Formatter;
+using System.Reflection;
+using System.IO;
+using static SWD391.Service.IAppServices;
+using static SWD391.Service.AppServices;
 
 namespace SWD391
 {
@@ -30,9 +40,10 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddControllers().AddNewtonsoftJson(options =>
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            //services.AddApiVersioning(options => options.RegisterMiddleware = false);
+            services.AddControllers().AddNewtonsoftJson();
+            //services.AddControllers().AddNewtonsoftJson(options =>
+            //options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddDbContext<SWD391Context>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SWD391Context")));
             services.Configure<IISServerOptions>(options =>
@@ -43,6 +54,11 @@ namespace SWD391
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
+                c.OperationFilter<CustomSwaggerAttribute>();
+
+                //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                //c.IncludeXmlComments(xmlPath);
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "mobile API", Version = "v1" });
             });
 
@@ -60,9 +76,22 @@ namespace SWD391
                 };
             });
             services.AddRouting(options => options.LowercaseUrls = true);
-
+            services.AddOData();
+            services.AddMvcCore(options =>
+            {
+                foreach (var outputFormatter in options.OutputFormatters.OfType<ODataOutputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+                foreach (var inputFormatter in options.InputFormatters.OfType<ODataInputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+            });
+            services.AddScoped<IBankService, BankService>();
             //--------------------------------------
             services.AddControllers();
+            //------------------------------------
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,7 +99,7 @@ namespace SWD391
         {
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
-
+            //app.UseApiVersioning();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -94,7 +123,23 @@ namespace SWD391
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.Select().Filter().OrderBy().MaxTop(null);
+                endpoints.EnableDependencyInjection();
+                endpoints.MapODataRoute("api", "api", GetEdmModel());
             });
+            //app.UseMvc(routeBuilder =>
+            //{
+            //    routeBuilder.EnableDependencyInjection();
+            //    routeBuilder.Select().Filter().OrderBy();
+            //    routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
+            //});
+        }
+        IEdmModel GetEdmModel()
+        {
+            var odataBuilder = new ODataConventionModelBuilder();
+            odataBuilder.EntitySet<Bank>("Banks");
+            odataBuilder.EntitySet<User>("Users");
+            return odataBuilder.GetEdmModel();
         }
     }
 }

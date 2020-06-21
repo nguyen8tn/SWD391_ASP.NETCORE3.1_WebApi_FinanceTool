@@ -17,5 +17,7 @@ namespace SWD391.Models
         public string Name { get; set; }
         [Column("email")]
         public string Email { get; set; }
+        [Column("createdDate")]
+        public DateTime? CreatedDate { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,12 @@ namespace SWD391.Controllers
 
         // GET: api/Users
         [HttpGet]
+        [HttpGet]
+        [AllowAnonymous]
+        [EnableQuery(PageSize = 2)]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            bool t = HttpContext.User.Identity.IsAuthenticated;
+            //bool t = HttpContext.User.Identity.IsAuthenticated;
             return await _context.User.ToListAsync();
         }
 

@@ -27,5 +27,9 @@ namespace SWD391.Models
         public double SavingRateTwelve { get; set; }
         [Column("saving_rate_twenty_four")]
         public double SavingRateTwentyFour { get; set; }
+        [Column("bank_icon")]
+        public string Icon { get; set; }
+        [Column("createdDate")]
+        public DateTime CreatedDate { get; set; }
     }
 }
