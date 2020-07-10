@@ -42,8 +42,10 @@ namespace SWD391
         {
             //services.AddApiVersioning(options => options.RegisterMiddleware = false);
             services.AddControllers().AddNewtonsoftJson();
-            //services.AddControllers().AddNewtonsoftJson(options =>
-            //options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddDbContext<SWD391Context>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SWD391Context")));
             services.Configure<IISServerOptions>(options =>

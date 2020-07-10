@@ -16,6 +16,10 @@ namespace SWD391.Data
 
         public DbSet<Bank> Bank { get; set; }
 
-        public DbSet<SWD391.Models.User> User { get; set; }
+        public DbSet<User> User { get; set; }
+        public DbSet<Calculation.Operand> Operands { get; set; }
+        public DbSet<Calculation.Formula> Formulas { get; set; }
+        public DbSet<Calculation.Explanation> Explanations { get; set; }
+        public DbSet<Calculation.BaseFormula> BaseFormulas { get; set; }
     }
 }

@@ -14,6 +14,8 @@ using static SWD391.Service.AppServices;
 using static Microsoft.AspNet.OData.Query.AllowedQueryOptions;
 using Microsoft.AspNet.OData.Query;
 using static SWD391.Service.IAppServices;
+using SWD391.Service;
+using HtmlAgilityPack;
 
 namespace SWD391.Controllers
 {
@@ -40,58 +42,6 @@ namespace SWD391.Controllers
             //await _bankService.GetBanks();
             return await _context.Bank.ToListAsync();
         }
-        //public ActionResult<PagedCollectionResponse<Bank>> GetBank()
-        //{
-        //    return _context.Bank.ToList();
-        //    //try
-        //    //{
-        //    //    //Filtering logic 
-        //    //    Func<QueryParams, IEnumerable<Bank>> listBank = filterModel =>
-        //    //    {
-        //    //        return _context.Bank.Where(n => n.Name.Contains(filterModel.Term))
-        //    //        .Skip((filterModel.Page - 1) * filter.Limit)
-        //    //        .Take(filterModel.Limit);
-        //    //    };
-        //    //    var list = _context.Bank.ToList();
-        //    //    var result = new PagedCollectionResponse<Bank>();
-        //    //    result.Items = listBank(filter);
-        //    //    //
-        //    //    //int te;
-
-        //    //    //te = listBank(filter).Count();
-        //    //    string nextUrl = "", previousUrl = "";
-        //    //    var jsonString = JsonConvert.SerializeObject(filter);
-
-        //    //    //Get next page URL string  
-        //    //    QueryParams nextFilter = JsonConvert.DeserializeObject<QueryParams>(jsonString);
-        //    //    nextFilter.Page += 1;
-        //    //    if (listBank(nextFilter).Count() > 0)
-        //    //    {
-        //    //        nextUrl = Url.Action("get", "banks", nextFilter, Request.Scheme);
-        //    //    }
-        //    //    //Get previous page
-        //    //    QueryParams preFilter = JsonConvert.DeserializeObject<QueryParams>(jsonString);
-        //    //    preFilter.Page -= 1;
-        //    //    if (preFilter.Page > 0)
-        //    //    {
-        //    //        previousUrl = Url.Action("Get", "Banks", preFilter);
-        //    //    }
-        //    //    if (!nextUrl.Equals(""))
-        //    //    {
-        //    //        result.NextPage = new Uri(nextUrl);
-        //    //    }
-        //    //    if (!previousUrl.Equals(""))
-        //    //    {
-        //    //        result.PreviousPage = new Uri(previousUrl);
-        //    //    }
-        //    //    return Ok(result);
-        //    //}
-        //    //catch (Exception e)
-        //    //{
-        //    //    return StatusCode(StatusCodes.Status500InternalServerError, e);
-        //    //}
-
-        //}
 
         // GET: api/Banks/5
         [HttpGet("{id}")]
@@ -201,7 +151,14 @@ namespace SWD391.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e);
             }
         }
-
+        [HttpGet]
+        [Route("/crawl")]
+        public ActionResult<List<HtmlNode>> CrawlBankPage() {
+            WebScrapingService scrapingService = new WebScrapingService();
+            List<HtmlNode> value = scrapingService.CrawlListBankInMain("https://thebank.vn/danh-ba-ngan-hang.html");
+            List<HtmlNode> response = value;
+            return Ok(response);
+        }
         private bool BankExists(string id)
         {
             return _context.Bank.Any(e => e.Id == id);

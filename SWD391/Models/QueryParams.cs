@@ -24,6 +24,19 @@ namespace SWD391.Models
         public string OrderBy { get; set; }
         public string SearchBy { get; set; }
     }
+
+    public class GrossToNetQuery
+    {
+        public double Salary { get; set; }
+        public int DeductionStage { get; set; }
+        public int DeductionDependant { get; set; }
+
+    }
+
+    public class Formula
+    {
+        public string Formular { get; set; }
+    }
     public class TestQuery
     {
         [JsonProperty("@odata.select")]
