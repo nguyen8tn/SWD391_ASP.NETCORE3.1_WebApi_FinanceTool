@@ -31,10 +31,20 @@ namespace SWD391.Controllers
             _context = context;
             _bankService = service;
         }
+        [HttpGet]
+        [Route("/crawl-list-bank")]
+        public async Task<ActionResult<List<HtmlNode>>> CrawlBankPage()
+        {
+            WebScrapingService scrapingService = new WebScrapingService();
+            var value = await scrapingService.CrawlListBankInMainAsync("https://thebank.vn/danh-ba-ngan-hang.html");
+            int id = 1;
+            return Ok();
+        }
 
         // GET: api/Banks
         [HttpGet]
         [EnableQuery(PageSize = 2)]
+        [Route("get-bank")]
         //[Route("", Name = "GetBank")]
         //[EnableQuery(AllowedQueryOptions = Select | Top | Skip | Count | Filter)]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
@@ -151,14 +161,8 @@ namespace SWD391.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, e);
             }
         }
-        [HttpGet]
-        [Route("/crawl")]
-        public ActionResult<List<HtmlNode>> CrawlBankPage() {
-            WebScrapingService scrapingService = new WebScrapingService();
-            List<HtmlNode> value = scrapingService.CrawlListBankInMain("https://thebank.vn/danh-ba-ngan-hang.html");
-            List<HtmlNode> response = value;
-            return Ok(response);
-        }
+
+        
         private bool BankExists(string id)
         {
             return _context.Bank.Any(e => e.Id == id);

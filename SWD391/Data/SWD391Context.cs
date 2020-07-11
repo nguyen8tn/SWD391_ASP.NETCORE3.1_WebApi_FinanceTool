@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SWD391.Models;
+using static SWD391.Models.Transaction;
 
 namespace SWD391.Data
 {
@@ -21,5 +22,7 @@ namespace SWD391.Data
         public DbSet<Calculation.Formula> Formulas { get; set; }
         public DbSet<Calculation.Explanation> Explanations { get; set; }
         public DbSet<Calculation.BaseFormula> BaseFormulas { get; set; }
+
+        public DbSet<UserSaving> UserSavings { get; set; }
     }
 }
