@@ -52,8 +52,8 @@ namespace SWD391.Controllers
         }
 
         [HttpGet]
-        [Route("get-loan-accounts/{uid}")]
-        public async Task<ActionResult<IEnumerable<UserSaving>>> GetLoanAccounts(string uid)
+        [Route("get-saving-accounts/{uid}")]
+        public async Task<ActionResult<IEnumerable<UserSaving>>> GetSavingAccounts(string uid)
         {
             try
             {
@@ -70,5 +70,6 @@ namespace SWD391.Controllers
             }
             return BadRequest();
         }
+
     }
 }
