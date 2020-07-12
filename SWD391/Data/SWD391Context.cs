@@ -13,6 +13,7 @@ namespace SWD391.Data
         public SWD391Context (DbContextOptions<SWD391Context> options)
             : base(options)
         {
+
         }
 
         public DbSet<Bank> Bank { get; set; }

@@ -58,5 +58,11 @@ namespace SWD391.Models
             [Column("created_date")]
             public DateTime? CreatedDate { get; set; }
         }
+
+        [Table("tbl_user_loan")]
+        public class UserLoan
+        {
+
+        }
     }
 }

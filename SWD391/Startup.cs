@@ -90,7 +90,10 @@ namespace SWD391
                     inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
                 }
             });
-            services.AddScoped<IBankService, BankService>();
+            //--------------------
+            services.AddScoped(typeof(IBankService), typeof(BankService));
+            //--------------------------------
+            services.AddScoped(typeof(ITransactionService), typeof(TransactionService));
             //--------------------------------------
             services.AddControllers();
             //------------------------------------
