@@ -36,7 +36,7 @@ jobs:
       uses: Azure/pipelines@v1
       with:
         # Fullyqualified URL to the Azure DevOps organization along with project name(eg, https://dev.azure.com/organization/project-name or https://server.example.com:8080/tfs/DefaultCollection/project-name)
-        azure-devops-project-url: https://dev.azure.com/phankyphu/SWD_Finance_Tool/?fbclid=IwAR2Fhy98WEH3IKOz5-kPj2OzH98d7ijOebC2lJ40tQ_yQkH9ODUffdlTfvc
+        azure-devops-project-url: https://dev.azure.com/phankyphu/SWD_Finance_Tool
         # Name of the Azure Pipline to be triggered
         azure-pipeline-name: SWD_Finance_Tool-ASP.NET Core-CI with SonarCloud.io
         # Paste personal access token of the user as value of secret variable:AZURE_DEVOPS_TOKEN
