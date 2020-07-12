@@ -12,7 +12,7 @@ namespace SWD391.Models
     {
         [Key]
         [Column("id")]
-        public string Id { get; set; }
+        public int Id { get; set; }
         [Column("bank_name")]
         public string Name { get; set; }
         [Column("loan_rate_six")]

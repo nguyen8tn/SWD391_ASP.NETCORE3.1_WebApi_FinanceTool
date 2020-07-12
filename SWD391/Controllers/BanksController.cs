@@ -55,11 +55,11 @@ namespace SWD391.Controllers
 
         // GET: api/Banks/5
         [HttpGet("{id}")]
-        public ActionResult<Bank> GetBank(string id)
+        public async Task<ActionResult<Bank>> GetBank(int id)
         {
             try
             {
-                var bank = _context.Bank.Find(id);
+                var bank = await _context.Bank.FindAsync(id);
                 if (bank == null)
                 {
                     return NotFound(new { message = "Not Found!" });
@@ -76,7 +76,7 @@ namespace SWD391.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public IActionResult PutBank(string id)
+        public IActionResult PutBank(int id)
         {
             try
             {
@@ -143,7 +143,7 @@ namespace SWD391.Controllers
 
         // DELETE: api/Banks/5
         [HttpDelete("{id}")]
-        public ActionResult<Bank> DeleteBank(string id)
+        public ActionResult<Bank> DeleteBank(int id)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace SWD391.Controllers
         }
 
         
-        private bool BankExists(string id)
+        private bool BankExists(int id)
         {
             return _context.Bank.Any(e => e.Id == id);
         }
