@@ -48,35 +48,35 @@ namespace SWD391.Service
                 _context = context;
             }
 
-            public async Task<bool> AddSavingAccount(Transaction.UserSaving obj)
+            public async Task<bool> AddSavingAccount(Transaction.SavingAccount obj)
             {
-                await _context.UserSavings.AddAsync(obj);
+                await _context.SavingAccounts.AddAsync(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
             }
 
-            public async Task<IEnumerable<Transaction.UserSaving>> GetSavingAccounts(string uid)
+            public async Task<IEnumerable<Transaction.SavingAccount>> GetSavingAccounts()
             {
-                var list = await _context.UserSavings.Where(x => x.UID.Equals(uid)).ToListAsync();
+                var list = await _context.SavingAccounts.ToListAsync();
                 return list;
             }
 
-            public async Task<Transaction.UserSaving> GetUserByID(string id)
+            public async Task<Transaction.SavingAccount> GetSavingAccountByID(string id)
             {
-                var user = await _context.UserSavings.FirstOrDefaultAsync(i => i.ID.Equals(id));
+                var user = await _context.SavingAccounts.FirstOrDefaultAsync(i => i.ID.Equals(id));
                 return user;
             }
 
-            public async Task<bool> UpdateSavingAccount(Transaction.UserSaving obj)
+            public async Task<bool> UpdateSavingAccount(Transaction.SavingAccount obj)
             {
-                _context.UserSavings.Update(obj);
+                _context.SavingAccounts.Update(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
             }
 
-            public async Task<bool> DeleteSavingAccount(Transaction.UserSaving obj)
+            public async Task<bool> DeleteSavingAccount(Transaction.SavingAccount obj)
             {
-                _context.UserSavings.Remove(obj);
+                _context.SavingAccounts.Remove(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
             }

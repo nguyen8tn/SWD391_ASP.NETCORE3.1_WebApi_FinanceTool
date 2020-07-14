@@ -45,9 +45,9 @@ namespace SWD391
 
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
             services.AddDbContext<SWD391Context>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("SWD391Context")));
+                    options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                        .UseSqlServer(Configuration.GetConnectionString("SWD391Context")));
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

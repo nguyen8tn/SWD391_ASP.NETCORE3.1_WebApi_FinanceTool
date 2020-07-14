@@ -21,11 +21,17 @@ namespace SWD391.Service
 
         public interface ITransactionService
         {
-            Task<IEnumerable<UserSaving>> GetSavingAccounts(string uid);
-            Task<bool> AddSavingAccount(UserSaving obj);
-            Task<bool> UpdateSavingAccount(UserSaving obj);
-            Task<bool> DeleteSavingAccount(UserSaving obj);
-            Task<UserSaving> GetUserByID(string id);
+            Task<IEnumerable<SavingAccount>> GetSavingAccounts();
+            Task<bool> AddSavingAccount(SavingAccount obj);
+            Task<bool> UpdateSavingAccount(SavingAccount obj);
+            Task<bool> DeleteSavingAccount(SavingAccount obj);
+            Task<SavingAccount> GetSavingAccountByID(string id);
+
+        }
+
+        public interface ICalculationService
+        {
+            Task<string> PushOperant(int formulaID);
 
         }
     }

@@ -37,14 +37,14 @@ namespace SWD391.Controllers
             {
                 return NotFound();
             }
-            User baseUser = await _context.User.FindAsync(user.Uid);
+            User baseUser = await _context.Users.FindAsync(user.Uid);
 
             if (baseUser == null)
             {
                 DateTime currentDay = DateTime.Now;
                 //user date send from app is null -> add date
                 user.CreatedDate = currentDay;
-                await _context.User.AddAsync(user);
+                await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
             UserResponse response = new UserResponse();

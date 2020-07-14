@@ -34,8 +34,8 @@ namespace SWD391.Controllers
         [EnableQuery(PageSize = 2)]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
-            //bool t = HttpContext.User.Identity.IsAuthenticated;
-            return await _context.User.ToListAsync();
+            //bool t = HttpContext.Users.Identity.IsAuthenticated;
+            return await _context.Users.ToListAsync();
         }
 
         [HttpPost]
@@ -49,11 +49,11 @@ namespace SWD391.Controllers
             {
                 return NotFound();
             }
-            var baseUser = await _context.User.FindAsync(user.Uid);
+            var baseUser = await _context.Users.FindAsync(user.Uid);
 
             if (baseUser == null)
             {
-                await _context.User.AddAsync(user);
+                await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
             }
             return Ok(user);
@@ -96,7 +96,7 @@ namespace SWD391.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.User.Add(user);
+            _context.Users.Add(user);
             try
             {
                 await _context.SaveChangesAsync();
@@ -120,13 +120,13 @@ namespace SWD391.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(string id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _context.User.Remove(user);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
             return user;
@@ -134,7 +134,7 @@ namespace SWD391.Controllers
 
         private bool UserExists(string id)
         {
-            return _context.User.Any(e => e.Uid == id);
+            return _context.Users.Any(e => e.Uid == id);
         }
     }
 }

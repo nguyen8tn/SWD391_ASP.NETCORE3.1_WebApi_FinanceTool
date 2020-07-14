@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using static SWD391.Models.Transaction;
 
 namespace SWD391.Models
 {
@@ -19,5 +20,7 @@ namespace SWD391.Models
         public string Email { get; set; }
         [Column("createdDate")]
         public DateTime? CreatedDate { get; set; }
+        public virtual ICollection<SavingAccount> SavingAccounts { get; set; }
+        public virtual ICollection<LoanAccount> LoanAccounts { get; set; }
     }
 }

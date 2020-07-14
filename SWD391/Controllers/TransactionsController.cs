@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SWD391.Data;
+using SWD391.Models;
 using static SWD391.Models.Transaction;
 using static SWD391.Service.IAppServices;
 
@@ -25,15 +26,15 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("add-saving-account")]
-        public async Task<ActionResult<UserSaving>> AddSavingAccount([FromBody] UserSaving userSaving)
+        public async Task<ActionResult<SavingAccount>> AddSavingAccount([FromBody] SavingAccount userSaving)
         {
             try
             {
-                var tmp = _context.UserSavings.FirstOrDefault(i => i.ID.Equals(userSaving.ID));
+                var tmp = _context.SavingAccounts.FirstOrDefault(i => i.ID.Equals(userSaving.ID));
                 if (tmp == null)
                 {
-                    UserSaving t = userSaving;
-                    await _context.UserSavings.AddAsync(t);
+                    SavingAccount t = userSaving;
+                    await _context.SavingAccounts.AddAsync(t);
                     await _context.SaveChangesAsync();
                     return Ok(userSaving);
                 }
@@ -54,19 +55,19 @@ namespace SWD391.Controllers
         }
 
         [HttpPost]
-        [Route("get-loan-accounts/{uid}")]
+        [Route("get-loan-accounts/{id}")]
         public void GetLoanAccounts()
         {
 
         }
 
         [HttpGet]
-        [Route("get-saving-accounts/{uid}")]
-        public async Task<ActionResult<IEnumerable<UserSaving>>> GetSavingAccounts(string uid)
+        [Route("get-saving-accounts/{id}")]
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> GetSavingAccounts(string id)
         {
             try
             {
-                var list = await _transactionService.GetSavingAccounts(uid);
+                var list = await _transactionService.GetSavingAccountByID(id);
             if (list != null)
             {
                 return Ok(list);
@@ -81,25 +82,28 @@ namespace SWD391.Controllers
         }
 
         [HttpPut]
-        [Route("update-loan-accounts/{uid}")]
+        [Route("update-loan-accounts/{id}")]
         public void UpdateLoanAccounts()
         {
 
         }
 
         [HttpPut]
-        [Route("update-saving-accounts/{uid}")]
-        public async Task<ActionResult<IEnumerable<UserSaving>>> UpdateSavingAccounts(string uid, [FromBody] UserSaving user)
+        [Route("update-saving-accounts/{id}")]
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> UpdateSavingAccounts(string uid, [FromBody] SavingAccount account)
         {
             try
             {
-                var baseUser = await _transactionService.GetUserByID(uid);
-                if (baseUser != null)
+                var baseAccount= await _transactionService.GetSavingAccountByID(uid);
+                if (baseAccount != null)
                 {
-                    bool t = await _transactionService.UpdateSavingAccount(user);
+                    bool t = await _transactionService.UpdateSavingAccount(account);
                     if (t)
                     {
-                       return Ok(user);
+                        TransactionControllerResponse response = new TransactionControllerResponse();
+                        string[] cars = new string[4] { "Volvo", "BMW", "Ford", "Mazda" };
+                        response.value.Add("obj",cars);
+                       return Ok(account);
                     } else
                     {
                        return BadRequest("Cannot Update");
@@ -115,18 +119,18 @@ namespace SWD391.Controllers
         }
 
         [HttpPut]
-        [Route("delete-saving-accounts/{uid}")]
-        public async Task<ActionResult<IEnumerable<UserSaving>>> DeleteSavingAccounts(string uid, [FromBody] UserSaving user)
+        [Route("delete-saving-accounts/{id}")]
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> DeleteSavingAccounts(string uid, [FromBody] SavingAccount account)
         {
             try
             {
-                var baseUser = await _transactionService.GetUserByID(uid);
+                var baseUser = await _transactionService.GetSavingAccountByID(uid);
                 if (baseUser != null)
                 {
-                    bool t = await _transactionService.DeleteSavingAccount(user);
+                    bool t = await _transactionService.DeleteSavingAccount(account);
                     if (t)
                     {
-                        return Ok(user);
+                        return Ok(account);
                     }
                     else
                     {
@@ -141,7 +145,5 @@ namespace SWD391.Controllers
             }
             return NotFound("Somthing Error");
         }
-
-
     }
 }

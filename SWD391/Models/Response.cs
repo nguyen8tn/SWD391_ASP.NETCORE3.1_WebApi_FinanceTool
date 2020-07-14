@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace SWD391.Models
 {
-    public class Response
+    public abstract class Response
     {
-        public IDictionary value { get; set; }
+        public abstract IDictionary<string, object> value { get; set; }
+    }
+
+    public class TransactionControllerResponse : Response
+    {
+        public override IDictionary<string, object> value { get; set; }
+        public int Test { get; set; }
     }
 }
