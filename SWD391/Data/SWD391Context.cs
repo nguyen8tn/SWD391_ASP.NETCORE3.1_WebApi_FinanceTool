@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using SWD391.Models;
 using static SWD391.Models.Calculation;
 using static SWD391.Models.Transaction;
-using Microsoft.Extensions.Logging;
 namespace SWD391.Data
 {
     public class SWD391Context : DbContext
@@ -21,9 +20,9 @@ namespace SWD391.Data
         public DbSet<Bank> Bank { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Operand> Operands { get; set; }
-        public DbSet<SubFormula> Formulas { get; set; }
         public DbSet<Explanation> Explanations { get; set; }
         public DbSet<BaseFormula> BaseFormulas { get; set; }
+        public DbSet<GroupValue> GroupValues { get; set; }
         public DbSet<SavingAccount> SavingAccounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,7 +34,10 @@ namespace SWD391.Data
 
             modelBuilder.Entity<User>().HasMany(x => x.LoanAccounts);
             modelBuilder.Entity<BaseFormula>().HasMany(x => x.Operands);
-            modelBuilder.Entity<Operand>().HasMany(x => x.SubFormulas);
+            modelBuilder.Entity<Operand>().HasMany(x => x.Childs).WithOne(e => e.Parent)
+                .HasForeignKey(e => e.OperandID);
+            modelBuilder.Entity<Operand>().HasOne(x => x.BaseFormula);
+
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

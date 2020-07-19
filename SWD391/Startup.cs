@@ -25,6 +25,7 @@ using System.Reflection;
 using System.IO;
 using static SWD391.Service.IAppServices;
 using static SWD391.Service.AppServices;
+using static SWD391.Models.EnumUtils;
 
 namespace SWD391
 {
@@ -45,9 +46,10 @@ namespace SWD391
 
             services.AddControllers().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
             services.AddDbContext<SWD391Context>(options =>
                     options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
-                        .UseSqlServer(Configuration.GetConnectionString("SWD391Context")));
+                        .UseSqlServer(DBConnection.Deploy.ConStr));
             services.Configure<IISServerOptions>(options =>
             {
                 options.AllowSynchronousIO = true;

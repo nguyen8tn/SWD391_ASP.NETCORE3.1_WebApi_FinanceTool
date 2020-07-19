@@ -32,32 +32,19 @@ namespace SWD391.Models
             [Column("base_formula_id")]
             [JsonProperty(PropertyName = "base_formula_id")]
             public int BaseFormulaID { get; set; }
-
-            [System.Text.Json.Serialization.JsonIgnore]
-            public virtual BaseFormula BaseFormula { get; set; }
-
-            [System.Text.Json.Serialization.JsonIgnore]
-            public virtual ICollection<SubFormula> SubFormulas { get; set; }
-
-            //[System.Text.Json.Serialization.JsonIgnore]
-            //public virtual  ICollection<> { get; set; }
-
-
-        }
-        [Table("tbl_sub_formula")]
-        public class SubFormula
-        {
-            [Key]
-            public int ID { get; set; }
-            [Column("expression")]
-            [JsonProperty(PropertyName = "expression")]
             public string Expression { get; set; }
             [Column("operand_id")]
             [JsonProperty(PropertyName = "operand_id")]
             public int OperandID { get; set; }
-
+            //-----------------------------------------------------
             [System.Text.Json.Serialization.JsonIgnore]
-            public virtual Operand Operand { get; set; }
+            public virtual BaseFormula BaseFormula { get; set; }
+            [System.Text.Json.Serialization.JsonIgnore]
+            public virtual ICollection<GroupValue> GroupValues { get; set; }
+            [System.Text.Json.Serialization.JsonIgnore]
+            public virtual Operand Parent { get; set; }
+            [System.Text.Json.Serialization.JsonIgnore]
+            public virtual ICollection<Operand> Childs { get; set; }
 
         }
 
@@ -85,31 +72,25 @@ namespace SWD391.Models
         public class GroupValue
         {
             [Key]
+            [JsonProperty(PropertyName = "id")]
             public int ID { get; set; }
-            [Column("expression")]
-            [JsonProperty(PropertyName = "expression")]
-            public string Expression { get; set; }
-        }
-        [Table("tbl_value")]
-        public class Value
-        {
-            [Key]
-            public int ID { get; set; }
+
+            [JsonProperty(PropertyName = "max")]
+            public double Max { get; set; }
+            [JsonProperty(PropertyName = "value")]
+            public string Value { get; set; }
+            [Column("operand_id")]
+            [JsonProperty(PropertyName = "operand_id")]
+            public int OperandID { get; set; }
+            [System.Text.Json.Serialization.JsonIgnore]
+            public virtual Operand Operand { get; set; }
         }
         public class Explanation
         {
             public int ID { get; set; }
             public int FormulaID { get; set; }
-            [System.Text.Json.Serialization.JsonIgnore]
-            public virtual SubFormula Formula { get; set; }
 
         }
-        public enum OperandTypeValue : int
-        {
-            INPUT = 1,
-            EXPRESSION = 2,
-            GROUP_VALUE = 3,
-            STATIC = 4
-        }
+        
     }
 }

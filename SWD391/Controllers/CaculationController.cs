@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using SWD391.Data;
 using SWD391.Models;
 using static SWD391.Models.Calculation;
+using static SWD391.Models.EnumUtils;
 using Operand = SWD391.Models.Calculation.Operand;
 
 namespace SWD391.Controllers
@@ -52,76 +53,6 @@ namespace SWD391.Controllers
         //    return Ok(respone);
         //}
 
-        //[HttpGet]
-        //[Route("caculate")]
-        //public async Task<ActionResult<IDictionary<string, IEnumerable<Calculation.Operand>>>> Caculate([FromBody] List<Calculation.Operand> userOperand)
-        //{
-        //    int id = 1;
-        //    List<Calculation.Operand> operand = await _context.Operands.Where(x => x.BaseFormulaID == id).Where(x => x.Static == false).ToListAsync();
-        //    List<Calculation.SubFormula> formulas = await _context.Formulas.Where(x => x.Formular == id).ToListAsync();
-        //    Calculation.BaseFormula baseFormula = await _context.BaseFormulas.Where(x => x.ID == id).FirstOrDefaultAsync();
-        //    //-----------------------------------
-        //    Caculate(operand, userOperand, formulas, baseFormula);
-        //    for (int i = 0; i < formulas.Count; i++)
-        //    {
-        //        string praseFromula = formulas.ElementAt(i).Fromula;
-        //    }
-        //    IDictionary<string, IEnumerable<Calculation.Operand>> respone = new Dictionary<string, IEnumerable<Calculation.Operand>>();
-        //    respone.Add("values", operand);
-        //    return Ok(respone);
-        //}
-
-        //private string  Caculate(List<Calculation.Operand> operands, List<Calculation.Operand> userOperands, List<Calculation.SubFormula> formulas, Calculation.BaseFormula mainFormula)
-        //{
-
-        //    VariableSet vSet = new VariableSet();
-        //    //register variable
-        //    for (int i = 0; i < operands.Count; i++)
-        //    {              
-        //        //register variable for non-static operand
-        //        if (operands.ElementAt(i).Static == false)
-        //        {
-        //            vSet.RegisterVariable(OperandType.Double, operands.ElementAt(i).Name, userOperands.Find(x => x.Name == operands.ElementAt(i).Name));
-        //        } else
-        //        {
-        //            //register variable for static operand
-        //            vSet.RegisterVariable(OperandType.Double, operands.ElementAt(i).Name, operands.ElementAt(i).Value);
-        //        }
-        //    }
-        //    //---------------
-        //    //caculate sub formula
-        //    var ep = new ExpressionParser();
-        //    List<double> resultList = new List<double>();
-        //    TokenList compiledExpression;
-        //    OperandStack result;
-        //    for (int i = 0; i < formulas.Count; i++)
-        //    {
-        //        compiledExpression = ep.Parse(formulas.ElementAt(i).Fromula);
-        //        result = compiledExpression.Evaluate(vSet);
-        //        double value = (double) result.Pop().GetValue(); 
-        //        resultList.Add(value);
-        //    }
-        //    // caculate main formula
-        //    compiledExpression = ep.Parse(mainFormula.Fromula);
-        //    Char[] operand = new Char[] { '+', '-', '*', ':', '^' };
-        //    string[] x = mainFormula.Fromula.Split(operand);
-        //    for (int i = 0; i < resultList.Count; i++)
-        //    {
-        //        vSet.RegisterVariable(OperandType.Double, x[i], resultList.ElementAt(i));
-        //    }
-        //    result = compiledExpression.Evaluate(vSet);
-        //    double valuex = (double)result.Pop().GetValue();
-        //    return "";
-        //}
-        ////private bool ValidateExpressionString(string expression)
-        ////{
-
-        ////}
-        ////public async Task<IEnumerable<Calculation.Explanation>> CaculateDetails(List<Calculation.Operand> userOperands, int baseFormularID)
-        ////{
-        ////    IEnumerable<Calculation.Explanation> list = await _context.Explanations.Where(x => x.BaseID == baseFormularID).ToListAsync();
-        ////    return list;
-        ////}
 
         [HttpGet]
         [Route("get-all-base-formula")]
@@ -135,7 +66,7 @@ namespace SWD391.Controllers
         [Route("push-user-input-operand-by-base-formula/{bfID}")]
         public async Task<ActionResult<IEnumerable<Operand>>> PushOperand(int bfID)
         {
-            IEnumerable<Operand> list = await _context.Operands.Where(x => x.BaseFormulaID == bfID).Where(x => x.Type == (int) OperandTypeValue.INPUT).ToListAsync();
+            IEnumerable<Operand> list = await _context.Operands.Where(x => x.BaseFormulaID == bfID).Where(x => x.Type == (int)OperandTypeValue.INPUT).ToListAsync();
             if (list == null)
             {
                 return NotFound();
@@ -147,42 +78,103 @@ namespace SWD391.Controllers
         [Route("calculate-formula/{id}")]
         public async Task<ActionResult<int>> Caculate([FromBody] List<Operand> operands, int id)
         {
+            //get user input
             List<Operand> request = operands;
             BaseFormula baseFormula = await _context.BaseFormulas.Where(x => x.ID == id).FirstOrDefaultAsync();
-            List<Operand> operandT = await _context.Operands.Where(x => x.BaseFormulaID == id)
-                .Include(x => x.SubFormulas
-                .Where(p => p.OperandID == x.ID))
-                .OrderBy(x => x.Sequence).ToListAsync();
-            Char[] operatorCus = new Char[] { '+', '-', '*', ':', '^', '(', ')' };
-            //-----------------------------------------------------------------------------
-            string[] operandArray = baseFormula.Expression.Split(operatorCus);
-            Dictionary<string, double> keyValuesOperand = new Dictionary<string, double>();
-            //----------------------
+            List<Operand> operandT = await _context.Operands
+                .Where(x => x.BaseFormulaID == id 
+                && x.Type != (int) OperandTypeValue.INPUT 
+                && x.OperandID == x.ID).ToListAsync();
+            //parse inputed value
             VariableSet vSetBaseFormula = new VariableSet();
+            var ep = new ExpressionParser();
             foreach (var item in request)
             {
-                keyValuesOperand.Add(item.Name, item.Value);
+                //keyValuesOperand.Add(item.Name, item.Value);
                 vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, item.Value);
             }
-            //----------------------
-            
-            for (int i = 0; i < operandT.Count; i++)
-            {
-                var ep = new ExpressionParser();
-                if (operandT[i].Type == (int) OperandTypeValue.EXPRESSION)
-                {
-                    keyValuesOperand.Add(operandT[i].Name, 1);
-                    await _context.Entry(operandT[i]).Collection(x => x.SubFormulas).LoadAsync();
-                    var compiledExpression = ep.Parse(operandT[i].BaseFormula.Expression);
 
-                }
-                if (operandT[i].Type == (int)OperandTypeValue.GROUP_VALUE)
+            //-----------------------------
+            foreach (var item in operandT)
+            {
+                if (item.Childs != null)
                 {
-                    //await _context.Entry(operandT[i]).Collection(x => x.).LoadAsync();
+                    List<Operand> childs = item.Childs.ToList();
+                    if (childs.Count > 0)
+                    {
+                        Console.WriteLine(item.Name + "x " + item.Value);
+                        vSetBaseFormula = await GetOperandChildsAsync(item, vSetBaseFormula);
+                    }
+                    else
+                    {
+                        var compiledExpression = ep.Parse(item.Expression);
+                        var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
+                        var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
+                        if (vSetBaseFormula.Where(x => x.VariableName.Equals(item.Name)).FirstOrDefault() == null)
+                        {
+                            vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, tmp);
+                        }
+                    }
                 }
             }
-            //--------------------------------
+            var ce = ep.Parse(baseFormula.Expression);
+            foreach (var item in vSetBaseFormula)
+            {
+                Console.WriteLine(item.VariableName + " " + item.Value);
+            }
+            var resul = ce.Evaluate(vSetBaseFormula);
+            double value = Convert.ToDouble(resul.Pop().GetValue());
+            Console.WriteLine(value);
+            //Char[] operatorCus = new Char[] { '+', '-', '*', ':', '^', '(', ')' };
+            ////-----------------------------------------------------------------------------
+            //string[] operandArray = baseFormula.Expression.Split(operatorCus);
+            //Dictionary<string, double> keyValuesOperand = new Dictionary<string, double>();
 
+            //----------------------
+            //caculate operand ->
+
+            //1.resgister value to operand
+            //for (int i = 0; i < operandT.Count; i++)
+            //{
+            //    var ep = new ExpressionParser();
+            //    SubFormula subFormula = null;
+            //    if (operandT[i].Type != (int) OperandTypeValue.INPUT && operandT[i].Type != (int)OperandTypeValue.STATIC)
+            //    {
+            //        keyValuesOperand.Add(operandT[i].Name, 1);
+            //        //load sub_formular each operand
+            //        await _context.Entry(operandT[i]).Collection(x => x.SubFormulas).LoadAsync();
+            //        subFormula = operandT[i].SubFormulas.ElementAt(0);
+            //        //
+            //        Console.WriteLine(operandT[i].Name);
+            //        Console.WriteLine(subFormula.Expression);
+            //        var compiledExpression = ep.Parse(subFormula.Expression);
+            //        var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
+            //        double value = Convert.ToDouble(resultStack.Pop().GetValue());
+            //        Console.WriteLine(value);
+            //        if (operandT[i].Type == (int)OperandTypeValue.EXPRESSION)
+            //        {
+            //            vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, value);
+            //        }
+            //        else if (operandT[i].Type == (int)OperandTypeValue.GROUP_VALUE)
+            //        {
+            //            await _context.Entry(subFormula).Collection(x => x.GroupValues).LoadAsync();
+            //            double tmp = 0;
+            //            var gropValues = subFormula.GroupValues.Where(x => x.Value > value).OrderBy(c => c.Max).ToList();           
+            //            if (gropValues.Count() != 0)
+            //            {
+            //                tmp = gropValues[0].Value;
+            //            }
+            //            vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, tmp);
+            //        }
+            //    }
+            //    else if (operandT[i].Type == (int)OperandTypeValue.STATIC)
+            //    {
+            //        vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, operandT[i].Value);
+            //    }
+            //}
+            //--------------------------------
+            //2. caculate basefromula by operand
+            Console.WriteLine("asdsad");
             return 0;
         }
 
@@ -197,6 +189,83 @@ namespace SWD391.Controllers
                 return Ok();
             }
             return BadRequest();
+        }
+
+        private async Task<VariableSet> GetOperandChildsAsync(Operand parent, VariableSet variableSet)
+        {
+            KeyValuePair<string, double> result;
+            await _context.Entry(parent).Collection(x => x.Childs).Query().LoadAsync();
+            var childs = parent.Childs;
+            if (childs.Count > 1)
+            {
+                //caculate child
+                for (int i = 1; i < childs.Count; i++)
+                {
+                    
+                    Console.WriteLine("i: " + i);
+                    await GetOperandChildsAsync(childs.ElementAt(i), variableSet);
+                }
+                //caculate parent
+                result = await CaculateOperandAsync(parent, variableSet);
+                Console.WriteLine("1");
+                Console.WriteLine(result.Key + " " + result.Value);
+                if (variableSet.Where(x => x.VariableName.Equals(result.Key)).FirstOrDefault() == null)
+                {
+                    variableSet.RegisterVariable(OperandType.Double, result.Key, result.Value);
+                }
+                return variableSet;
+            }
+            else
+            {
+                result = await CaculateOperandAsync(parent, variableSet);
+                Console.WriteLine("2");
+                Console.WriteLine(result.Key + " " + result.Value);
+                if (variableSet.Where(x => x.VariableName.Equals(result.Key)).FirstOrDefault() == null)
+                {
+                    variableSet.RegisterVariable(OperandType.Double, result.Key, result.Value);
+                }
+            }
+            return variableSet;
+        }
+        private async Task<KeyValuePair<string, double>> CaculateOperandAsync(Operand operand, VariableSet variableSet)
+        {
+            Console.WriteLine("Break at: " + operand.Name + operand.Expression);
+            foreach (var item in variableSet)
+            {
+                Console.WriteLine(item.VariableName + item.Value);
+            }
+            KeyValuePair<string, double> result = new KeyValuePair<string, double>();
+            if (operand.Type == (int)OperandTypeValue.EXPRESSION || operand.Type == (int)OperandTypeValue.GROUP_VALUE)
+            {
+                var ep = new ExpressionParser();
+                var compiledExpression = ep.Parse(operand.Expression);
+                var resultStack = compiledExpression.Evaluate(variableSet);
+                double value = Convert.ToDouble(resultStack.Pop().GetValue());
+                if (operand.Type == (int)OperandTypeValue.EXPRESSION)
+                {
+                    operand.Value = value;
+                    result = new KeyValuePair<string, double>(operand.Name, operand.Value);
+                }
+                else if (operand.Type == (int)OperandTypeValue.GROUP_VALUE)
+                {
+                    await _context.Entry(operand).Collection(x => x.GroupValues).LoadAsync();
+                    var gropValues = operand.GroupValues.Where(x => x.Max > value).OrderBy(c => c.Max).ToList();
+                    if (gropValues.Count() != 0)
+                    {
+                        compiledExpression = ep.Parse(gropValues[0].Value);
+                        resultStack = compiledExpression.Evaluate(variableSet);
+                        value = Convert.ToDouble(resultStack.Pop().GetValue());
+                        Console.WriteLine("Add: " + operand.Name);
+                        result = new KeyValuePair<string, double>(operand.Name, value);
+                    }
+                }               
+            }
+            else if (operand.Type == (int)OperandTypeValue.STATIC)
+            {
+
+                result = new KeyValuePair<string, double>(operand.Name, operand.Value);
+            }
+            return result;
         }
     }
 }
