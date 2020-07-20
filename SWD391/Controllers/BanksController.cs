@@ -50,7 +50,7 @@ namespace SWD391.Controllers
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
             //await _bankService.GetBanks();
-            return await _context.Bank.ToListAsync();
+            return await _context.Banks.ToListAsync();
         }
 
         // GET: api/Banks/5
@@ -59,7 +59,7 @@ namespace SWD391.Controllers
         {
             try
             {
-                var bank = await _context.Bank.FindAsync(id);
+                var bank = await _context.Banks.FindAsync(id);
                 if (bank == null)
                 {
                     return NotFound(new { message = "Not Found!" });
@@ -89,7 +89,7 @@ namespace SWD391.Controllers
                     var reader = new StreamReader(Request.Body);
                     var body = reader.ReadToEnd();
                     var bank = JsonConvert.DeserializeObject<Bank>(body);
-                    var baseBank = _context.Bank.FirstOrDefault(i => i.Id.Equals(id));
+                    var baseBank = _context.Banks.FirstOrDefault(i => i.Id.Equals(id));
                     if (baseBank != null)
                     {
                         baseBank.Name = bank.Name;
@@ -121,7 +121,7 @@ namespace SWD391.Controllers
                 var reader = new StreamReader(Request.Body);
                 var body = reader.ReadToEnd();
                 var bank = JsonConvert.DeserializeObject<Bank>(body);
-                _context.Bank.Add(bank);
+                _context.Banks.Add(bank);
                 try
                 {
                     _context.SaveChanges();
@@ -147,12 +147,12 @@ namespace SWD391.Controllers
         {
             try
             {
-                var bank = _context.Bank.Find(id);
+                var bank = _context.Banks.Find(id);
                 if (bank == null)
                 {
                     return NotFound();
                 }
-                _context.Bank.Remove(bank);
+                _context.Banks.Remove(bank);
                 _context.SaveChanges();
                 return bank;
             }
@@ -165,7 +165,7 @@ namespace SWD391.Controllers
         
         private bool BankExists(int id)
         {
-            return _context.Bank.Any(e => e.Id == id);
+            return _context.Banks.Any(e => e.Id == id);
         }
     }
 }

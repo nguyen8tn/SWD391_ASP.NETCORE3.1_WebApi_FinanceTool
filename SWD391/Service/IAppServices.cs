@@ -13,10 +13,18 @@ namespace SWD391.Service
         public interface IBankService
         {
             Task<IEnumerable<Bank>> GetBanks();
+            Task<Bank> GeBankByIDAsync(int id);
+            Task<bool> UpdateBankAsync(Bank bank);
+            Task<bool> DeleteBankAsync(Bank bank);
+            Task<bool> AddBankAsync(Bank bank);
         }
         public interface IUserService
         {
-            Task<ActionResult<IEnumerable<User>>> GetUsers();
+            Task<ActionResult<IEnumerable<User>>> GetUsersAsync();
+            Task<User> GetUserByIDAsync(string id);
+            Task<bool> UpdateUserAsync(User user);
+            Task<bool> DeleteUserAsync(User user);
+            Task<bool> AddUserAsync(User user);
         }
 
         public interface ITransactionService

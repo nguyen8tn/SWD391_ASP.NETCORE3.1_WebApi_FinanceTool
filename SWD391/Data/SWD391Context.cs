@@ -17,7 +17,7 @@ namespace SWD391.Data
 
         }
 
-        public DbSet<Bank> Bank { get; set; }
+        public DbSet<Bank> Banks { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Operand> Operands { get; set; }
         public DbSet<Explanation> Explanations { get; set; }

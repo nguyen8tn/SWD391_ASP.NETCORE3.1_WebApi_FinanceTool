@@ -16,6 +16,25 @@ namespace SWD391.Service
         {
             private readonly SWD391Context _context;
 
+            public async Task<bool> AddBankAsync(Bank bank)
+            {
+                await _context.Banks.AddAsync(bank);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<bool> DeleteBankAsync(Bank bank)
+            {
+                _context.Banks.Remove(bank);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public Task<Bank> GeBankByIDAsync(int id)
+            {
+                throw new NotImplementedException();
+            }
+
             public async Task<IEnumerable<Bank>> GetBanks()
             {
                 //string nextUrl = "", previousUrl = "";
@@ -29,14 +48,54 @@ namespace SWD391.Service
                 //    result.Items = listResult;
                 //}
                 //throw new NotImplementedException();
-                return _context.Bank.ToList();
+                return _context.Banks.ToList();
+            }
+
+            public async Task<bool> UpdateBankAsync(Bank bank)
+            {
+                _context.Banks.Update(bank);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
             }
         }
+
         public class UserService : IUserService
         {
-            public Task<ActionResult<IEnumerable<User>>> GetUsers()
+            private readonly SWD391Context _context;
+            public UserService(SWD391Context context)
+            {
+                _context = context;
+            }
+            public async Task<User> GetUserByIDAsync(string id)
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(i => i.Uid.Equals(id));
+                return user;
+            }
+
+            public Task<ActionResult<IEnumerable<User>>> GetUsersAsync()
             {
                 throw new NotImplementedException();
+            }
+
+            public async Task<bool> UpdateUserAsync(User user)
+            {
+                _context.Users.Update(user);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<bool> AddUserAsync(User user)
+            {
+                await _context.Users.AddAsync(user);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<bool> DeleteUserAsync(User user)
+            {
+                _context.Users.Remove(user);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
             }
         }
 

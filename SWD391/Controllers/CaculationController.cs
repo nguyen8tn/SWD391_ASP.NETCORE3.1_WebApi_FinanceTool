@@ -43,17 +43,6 @@ namespace SWD391.Controllers
         //    return compiledExpression.ToString() + " ---------------- ";
         //}
 
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Calculation.Operand>>> PushOperand()
-        //{
-        //    List<Calculation.Operand> operand = await _context.Operands.Where(x => x.BaseFormulaID == 1)
-        //                                                        .Where(x => x.Static == false).ToListAsync();
-        //    IDictionary<string, IEnumerable<Calculation.Operand>> respone = new Dictionary<string, IEnumerable<Calculation.Operand>>();
-        //    respone.Add("values", operand);
-        //    return Ok(respone);
-        //}
-
-
         [HttpGet]
         [Route("get-all-base-formula")]
         public async Task<ActionResult<IEnumerable<BaseFormula>>> GetAllBaseFormula()
@@ -82,8 +71,8 @@ namespace SWD391.Controllers
             List<Operand> request = operands;
             BaseFormula baseFormula = await _context.BaseFormulas.Where(x => x.ID == id).FirstOrDefaultAsync();
             List<Operand> operandT = await _context.Operands
-                .Where(x => x.BaseFormulaID == id 
-                && x.Type != (int) OperandTypeValue.INPUT 
+                .Where(x => x.BaseFormulaID == id
+                && x.Type != (int)OperandTypeValue.INPUT
                 && x.OperandID == x.ID).ToListAsync();
             //parse inputed value
             VariableSet vSetBaseFormula = new VariableSet();
@@ -125,68 +114,27 @@ namespace SWD391.Controllers
             var resul = ce.Evaluate(vSetBaseFormula);
             double value = Convert.ToDouble(resul.Pop().GetValue());
             Console.WriteLine(value);
-            //Char[] operatorCus = new Char[] { '+', '-', '*', ':', '^', '(', ')' };
-            ////-----------------------------------------------------------------------------
-            //string[] operandArray = baseFormula.Expression.Split(operatorCus);
-            //Dictionary<string, double> keyValuesOperand = new Dictionary<string, double>();
-
-            //----------------------
-            //caculate operand ->
-
-            //1.resgister value to operand
-            //for (int i = 0; i < operandT.Count; i++)
-            //{
-            //    var ep = new ExpressionParser();
-            //    SubFormula subFormula = null;
-            //    if (operandT[i].Type != (int) OperandTypeValue.INPUT && operandT[i].Type != (int)OperandTypeValue.STATIC)
-            //    {
-            //        keyValuesOperand.Add(operandT[i].Name, 1);
-            //        //load sub_formular each operand
-            //        await _context.Entry(operandT[i]).Collection(x => x.SubFormulas).LoadAsync();
-            //        subFormula = operandT[i].SubFormulas.ElementAt(0);
-            //        //
-            //        Console.WriteLine(operandT[i].Name);
-            //        Console.WriteLine(subFormula.Expression);
-            //        var compiledExpression = ep.Parse(subFormula.Expression);
-            //        var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
-            //        double value = Convert.ToDouble(resultStack.Pop().GetValue());
-            //        Console.WriteLine(value);
-            //        if (operandT[i].Type == (int)OperandTypeValue.EXPRESSION)
-            //        {
-            //            vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, value);
-            //        }
-            //        else if (operandT[i].Type == (int)OperandTypeValue.GROUP_VALUE)
-            //        {
-            //            await _context.Entry(subFormula).Collection(x => x.GroupValues).LoadAsync();
-            //            double tmp = 0;
-            //            var gropValues = subFormula.GroupValues.Where(x => x.Value > value).OrderBy(c => c.Max).ToList();           
-            //            if (gropValues.Count() != 0)
-            //            {
-            //                tmp = gropValues[0].Value;
-            //            }
-            //            vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, tmp);
-            //        }
-            //    }
-            //    else if (operandT[i].Type == (int)OperandTypeValue.STATIC)
-            //    {
-            //        vSetBaseFormula.RegisterVariable(OperandType.Double, operandT[i].Name, operandT[i].Value);
-            //    }
-            //}
-            //--------------------------------
-            //2. caculate basefromula by operand
             Console.WriteLine("asdsad");
             return 0;
         }
 
         [HttpPost]
         [Route("add-base-formula")]
-        public async Task<ActionResult<BaseFormula>> AddBaseFormula([FromBody] BaseFormula baseFormula)
+        public async Task<ActionResult<BaseFormula>> AddBaseFormula([FromBody] FormulaRequest request)
         {
-            await _context.BaseFormulas.AddAsync(baseFormula);
-            bool check = await _context.SaveChangesAsync() > 0;
-            if (check)
+            try
             {
-                return Ok();
+                request.Operands.Where(x => x.Type == (int)OperandTypeValue.INPUT).ToList();
+
+                bool check = await _context.SaveChangesAsync() > 0;
+                if (check)
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception e)
+            {
+
             }
             return BadRequest();
         }
@@ -201,13 +149,12 @@ namespace SWD391.Controllers
                 //caculate child
                 for (int i = 1; i < childs.Count; i++)
                 {
-                    
+
                     Console.WriteLine("i: " + i);
                     await GetOperandChildsAsync(childs.ElementAt(i), variableSet);
                 }
                 //caculate parent
                 result = await CaculateOperandAsync(parent, variableSet);
-                Console.WriteLine("1");
                 Console.WriteLine(result.Key + " " + result.Value);
                 if (variableSet.Where(x => x.VariableName.Equals(result.Key)).FirstOrDefault() == null)
                 {
@@ -218,7 +165,6 @@ namespace SWD391.Controllers
             else
             {
                 result = await CaculateOperandAsync(parent, variableSet);
-                Console.WriteLine("2");
                 Console.WriteLine(result.Key + " " + result.Value);
                 if (variableSet.Where(x => x.VariableName.Equals(result.Key)).FirstOrDefault() == null)
                 {
@@ -227,6 +173,7 @@ namespace SWD391.Controllers
             }
             return variableSet;
         }
+
         private async Task<KeyValuePair<string, double>> CaculateOperandAsync(Operand operand, VariableSet variableSet)
         {
             Console.WriteLine("Break at: " + operand.Name + operand.Expression);
@@ -258,7 +205,7 @@ namespace SWD391.Controllers
                         Console.WriteLine("Add: " + operand.Name);
                         result = new KeyValuePair<string, double>(operand.Name, value);
                     }
-                }               
+                }
             }
             else if (operand.Type == (int)OperandTypeValue.STATIC)
             {

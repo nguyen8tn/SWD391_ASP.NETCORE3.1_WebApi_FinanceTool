@@ -91,6 +91,11 @@ namespace SWD391.Models
             public int FormulaID { get; set; }
 
         }
+        public class FormulaRequest
+        {
+            public BaseFormula baseFormula { get; set; }
+            public virtual List<Operand> Operands { get; set; }
+        }
         
     }
 }

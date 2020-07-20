@@ -28,7 +28,7 @@ namespace SWD391.Controllers
         [HttpPost]
         [Route("login")]
         [Authorize]
-        public async Task<ActionResult<UserResponse>> Login()
+        public async Task<ActionResult<UserResponse>> Login([FromBody] User loginUser)
         {
             var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
