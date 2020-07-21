@@ -54,7 +54,6 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("login-admin/{uid}")]
-        [Authorize]
         public ActionResult<UserResponse> LoginAdmin(string uid)
         {
             string jwt = setRole("admin");

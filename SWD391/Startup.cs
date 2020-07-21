@@ -26,6 +26,7 @@ using System.IO;
 using static SWD391.Service.IAppServices;
 using static SWD391.Service.AppServices;
 using static SWD391.Models.EnumUtils;
+using Microsoft.IdentityModel.Logging;
 
 namespace SWD391
 {
@@ -41,6 +42,18 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("http://financial-web-service.azurewebsites.net",
+                                            "https://localhost:5001",
+                                            "http://localhost:5000",
+                                            "http://localhost:3000");
+                    });
+            });
+            IdentityModelEventSource.ShowPII = true;
             //services.AddApiVersioning(options => options.RegisterMiddleware = false);
             services.AddControllers().AddNewtonsoftJson();
 
@@ -97,6 +110,7 @@ namespace SWD391
             //--------------------------------
             services.AddScoped(typeof(ITransactionService), typeof(TransactionService));
             //--------------------------------------
+            services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddControllers();
             //------------------------------------
         }
@@ -140,6 +154,7 @@ namespace SWD391
             //    routeBuilder.Select().Filter().OrderBy();
             //    routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
             //});
+            app.UseCors();
         }
         IEdmModel GetEdmModel()
         {

@@ -15,7 +15,10 @@ namespace SWD391.Service
         public class BankService : IBankService
         {
             private readonly SWD391Context _context;
-
+            public BankService(SWD391Context context)
+            {
+                _context = context;
+            }
             public async Task<bool> AddBankAsync(Bank bank)
             {
                 await _context.Banks.AddAsync(bank);
