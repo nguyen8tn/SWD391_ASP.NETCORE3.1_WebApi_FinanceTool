@@ -57,6 +57,19 @@ namespace SWD391
                                             .AllowAnyMethod();
                                   });
             });
+            //Authentication
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.Authority = "https://securetoken.google.com/swd391-d8680";
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = "https://securetoken.google.com/swd391-d8680",
+                    ValidateAudience = true,
+                    ValidAudience = "swd391-d8680",
+                    ValidateLifetime = true
+                };
+            });
             IdentityModelEventSource.ShowPII = true;
             //services.AddApiVersioning(options => options.RegisterMiddleware = false);
             services.AddControllers().AddNewtonsoftJson();
@@ -83,19 +96,7 @@ namespace SWD391
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "mobile API", Version = "v1" });
             });
 
-            //Authentication
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.Authority = "https://securetoken.google.com/swd391-d8680";
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = "https://securetoken.google.com/swd391-d8680",
-                    ValidateAudience = true,
-                    ValidAudience = "swd391-d8680",
-                    ValidateLifetime = true
-                };
-            });
+
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddOData();
             services.AddMvcCore(options =>
@@ -142,22 +143,14 @@ namespace SWD391
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.Select().Filter().OrderBy().MaxTop(null);
-                endpoints.EnableDependencyInjection();
-                endpoints.MapODataRoute("api", "api", GetEdmModel());
+
             });
-            //app.UseMvc(routeBuilder =>
-            //{
-            //    routeBuilder.EnableDependencyInjection();
-            //    routeBuilder.Select().Filter().OrderBy();
-            //    routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
-            //});
+
         }
         IEdmModel GetEdmModel()
         {

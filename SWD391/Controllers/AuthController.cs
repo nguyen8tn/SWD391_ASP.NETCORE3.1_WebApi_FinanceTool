@@ -27,6 +27,7 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("login")]
+        [Authorize()]
         public async Task<ActionResult<UserResponse>> Login([FromBody] User user)
         {
             if (user.Uid == null)
@@ -44,40 +45,22 @@ namespace SWD391.Controllers
                 await _context.SaveChangesAsync();
             }
             UserResponse response = new UserResponse();
-            response.JwtString = setRole("user");
+            string authHeader = Request.Headers["Authorization"];
+            response.JwtString = Utils.SWDUtils.setRole("user", authHeader);
             return Ok(response);
         }
 
         [HttpPost]
-        [Route("login-admin/{uid}")]
-        [Authorize]
-        public ActionResult<UserResponse> LoginAdmin(string uid)
+        [Route("login-admin")]
+        [Authorize()]
+        public ActionResult<UserResponse> LoginAdmin()
         {
-            string jwt = setRole("admin");
+            string authHeader = Request.Headers["Authorization"];
+            string jwt = Utils.SWDUtils.setRole("admin", authHeader);
             UserResponse response = new UserResponse();
             response.JwtString = jwt;
             return Ok(response);
         }
 
-        private string setRole(string role)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            //get headder
-            string authHeader = Request.Headers["Authorization"];
-            //remove Bearer prefix
-            authHeader = authHeader.Replace("Bearer ", "");
-            //cast to jwtlet
-            var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
-            //add new custome claims
-            tokenS.Payload["role"] = role;
-            //var id = tokenS.Claims.First(claim => claim.Type == "nameid").Value;
-            var jwt = handler.WriteToken(tokenS);
-            return jwt;
-        }
-
-        private bool valideRole()
-        {
-            return false;
-        }
     }
 }

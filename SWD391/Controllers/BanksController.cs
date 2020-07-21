@@ -80,6 +80,11 @@ namespace SWD391.Controllers
         {
             try
             {
+                string authHeader = Request.Headers["Authorization"];
+                if (!Utils.SWDUtils.isAdmin(authHeader))
+                {
+                    return Unauthorized(new { Message = "Access Denied!" });
+                }
                 if (!BankExists(id))
                 {
                     return NotFound(new { Message = "Not Found!" });
@@ -114,13 +119,15 @@ namespace SWD391.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public ActionResult<Bank> PostBank()
+        public ActionResult<Bank> PostBank([FromBody] Bank bank)
         {
             try
             {
-                var reader = new StreamReader(Request.Body);
-                var body = reader.ReadToEnd();
-                var bank = JsonConvert.DeserializeObject<Bank>(body);
+                string authHeader = Request.Headers["Authorization"];
+                if (!Utils.SWDUtils.isAdmin(authHeader))
+                {
+                    return Unauthorized(new { Message = "Access Denied!" });
+                }
                 _context.Banks.Add(bank);
                 try
                 {
@@ -130,7 +137,7 @@ namespace SWD391.Controllers
                 {
                     if (BankExists(bank.Id))
                     {
-                        return Conflict(e);
+                        return Conflict(new { Message = "Duplicated Bank!" });
                     }
                 }
                 return CreatedAtAction("GetBank", new { id = bank.Id }, bank);
@@ -147,6 +154,11 @@ namespace SWD391.Controllers
         {
             try
             {
+                string authHeader = Request.Headers["Authorization"];
+                if (!Utils.SWDUtils.isAdmin(authHeader))
+                {
+                    return Unauthorized(new { Message = "Access Denied!" });
+                } 
                 var bank = _context.Banks.Find(id);
                 if (bank == null)
                 {
