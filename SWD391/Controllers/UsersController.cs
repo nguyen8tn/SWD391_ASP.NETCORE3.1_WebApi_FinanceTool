@@ -29,7 +29,6 @@ namespace SWD391.Controllers
 
         // GET: api/Users
         [HttpGet]
-        [HttpGet]
         [AllowAnonymous]
         [EnableQuery(PageSize = 2)]
         public async Task<ActionResult<IEnumerable<User>>> GetUser()

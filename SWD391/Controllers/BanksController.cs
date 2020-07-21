@@ -22,7 +22,7 @@ namespace SWD391.Controllers
 {
     [Route("api/[controller]")]
     //[ApiExplorerSettings(IgnoreApi = false)]
-    public class BanksController : Controller
+    public class BanksController : ControllerBase
     {
         private readonly SWD391Context _context;
         private IBankService _bankService;
@@ -33,12 +33,11 @@ namespace SWD391.Controllers
             _bankService = service;
         }
         [HttpGet]
-        [Route("/crawl-list-bank")]
+        [Route("crawl-list-bank")]
         public async Task<ActionResult<List<HtmlNode>>> CrawlBankPage()
         {
             WebScrapingService scrapingService = new WebScrapingService();
             var value = await scrapingService.CrawlListBankInMainAsync("https://thebank.vn/danh-ba-ngan-hang.html");
-            int id = 1;
             return Ok();
         }
 
