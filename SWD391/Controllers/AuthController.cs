@@ -45,20 +45,17 @@ namespace SWD391.Controllers
                 await _context.SaveChangesAsync();
             }
             UserResponse response = new UserResponse();
-            string authHeader = Request.Headers["Authorization"];
-            response.JwtString = Utils.SWDUtils.setRole("user", authHeader);
+            response.JwtString = await Utils.SWDUtils.setRoleAsync("user", user.Uid);
             return Ok(response);
         }
 
         [HttpPost]
         [Route("login-admin")]
         [Authorize()]
-        public ActionResult<UserResponse> LoginAdmin()
+        public async Task<ActionResult<UserResponse>> LoginAdmin([FromQuery] string uid)
         {
-            string authHeader = Request.Headers["Authorization"];
-            string jwt = Utils.SWDUtils.setRole("admin", authHeader);
             UserResponse response = new UserResponse();
-            response.JwtString = jwt;
+            response.JwtString = await Utils.SWDUtils.setRoleAsync("admin", uid);
             return Ok(response);
         }
 

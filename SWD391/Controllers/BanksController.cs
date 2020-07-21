@@ -16,6 +16,7 @@ using Microsoft.AspNet.OData.Query;
 using static SWD391.Service.IAppServices;
 using SWD391.Service;
 using HtmlAgilityPack;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SWD391.Controllers
 {
@@ -49,7 +50,6 @@ namespace SWD391.Controllers
         //[EnableQuery(AllowedQueryOptions = Select | Top | Skip | Count | Filter)]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
-            //await _bankService.GetBanks();
             return await _context.Banks.ToListAsync();
         }
 
@@ -119,6 +119,7 @@ namespace SWD391.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize()]
         public ActionResult<Bank> PostBank([FromBody] Bank bank)
         {
             try

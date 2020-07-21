@@ -27,6 +27,7 @@ using static SWD391.Service.IAppServices;
 using static SWD391.Service.AppServices;
 using static SWD391.Models.EnumUtils;
 using Microsoft.IdentityModel.Logging;
+using System.Net;
 
 namespace SWD391
 {
@@ -123,6 +124,10 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+            | SecurityProtocolType.Tls11
+            | SecurityProtocolType.Tls12;
             app.UseCors(MyAllowSpecificOrigins);
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -148,7 +153,8 @@ namespace SWD391
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-
+                endpoints.Select().Filter().OrderBy().Count().MaxTop(100);
+                endpoints.MapODataRoute("api", "api", GetEdmModel());
             });
 
         }
