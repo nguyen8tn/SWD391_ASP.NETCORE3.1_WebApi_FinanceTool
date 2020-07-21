@@ -22,7 +22,6 @@ namespace SWD391.Models
 
             [JsonProperty(PropertyName = "bank_id")]
             [Column("bank_id")]
-            [ForeignKey("Bank")]
             public int BankID { get; set; }
 
             [JsonProperty(PropertyName = "user_id")]

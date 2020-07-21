@@ -30,6 +30,7 @@ namespace SWD391.Models
         [Column("icon")]
         public string Icon { get; set; }
         [Column("created_date")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? CreatedDate { get; set; }
     }
 }

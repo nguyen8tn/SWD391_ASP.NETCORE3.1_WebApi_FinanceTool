@@ -94,7 +94,9 @@ namespace SWD391.Models
         public class FormulaRequest
         {
             public BaseFormula baseFormula { get; set; }
-            public virtual List<Operand> Operands { get; set; }
+            public List<Operand> Operands { get; set; }
+            public List<GroupValue> GroupValues { get; set; }
+            public List<int> testNumber { get; set; }
         }
         
     }

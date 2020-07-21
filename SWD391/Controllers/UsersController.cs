@@ -111,7 +111,6 @@ namespace SWD391.Controllers
             return CreatedAtAction("GetUser", new { id = user.Uid }, user);
         }
 
-        // DELETE: api/Users/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(string id)
         {

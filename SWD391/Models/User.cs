@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,14 +14,18 @@ namespace SWD391.Models
     {
         [Key]
         [Column("id")]
+        [JsonProperty(PropertyName = "id")]
         public string Uid { get; set; }
-        [Column("name")]
+        [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
-        [Column("email")]
+        [JsonProperty(PropertyName = "email")]
         public string Email { get; set; }
         [Column("createdDate")]
+        [JsonProperty(PropertyName = "createdDate")]
         public DateTime? CreatedDate { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<SavingAccount> SavingAccounts { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<LoanAccount> LoanAccounts { get; set; }
     }
 }

@@ -113,30 +113,90 @@ namespace SWD391.Controllers
             }
             var resul = ce.Evaluate(vSetBaseFormula);
             double value = Convert.ToDouble(resul.Pop().GetValue());
-            Console.WriteLine(value);
-            Console.WriteLine("asdsad");
             return 0;
         }
 
         [HttpPost]
-        [Route("add-base-formula")]
-        public async Task<ActionResult<BaseFormula>> AddBaseFormula([FromBody] FormulaRequest request)
+        [Route("add-formula")]
+        public ActionResult<Dictionary<int, double>> AddFormula([FromBody] FormulaRequest request)
         {
             try
             {
-                request.Operands.Where(x => x.Type == (int)OperandTypeValue.INPUT).ToList();
+                var inputList = request.Operands.Where(x => x.Type == (int)OperandTypeValue.INPUT).ToList();
+                List<Operand> list = request.Operands.Where(x => x.Type != (int)OperandTypeValue.INPUT && x.OperandID == x.ID)
+                    .OrderBy(x => x.Sequence).ToList();
+                var tmp = request.GroupValues.ToList();
+                foreach (var item in tmp)
+                {
+                    var t = list.Where(x => x.Type == (int)OperandTypeValue.GROUP_VALUE && x.OperandID == item.OperandID).FirstOrDefault();
+                    if (t != null)
+                    {
+                        list.Remove(t);
+                        t.GroupValues.Add(item);
+                        list.Add(t);
+                    }
+                }
+                //parse inputed value
+                VariableSet vSetBaseFormula = new VariableSet();
+                var ep = new ExpressionParser();
+                foreach (var item in inputList)
+                {
+                    //keyValuesOperand.Add(item.Name, item.Value);
+                    vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, item.Value);
+                }
 
-                bool check = await _context.SaveChangesAsync() > 0;
+                //-----------------------------
+                Dictionary<int, double> listResult = new Dictionary<int, double>();
+                Parallel.ForEach(request.testNumber, async (item) =>
+                {
+                    foreach (var operand in list)
+                    {
+                        if (operand.Childs != null)
+                        {
+                            List<Operand> childs = operand.Childs.ToList();
+                            if (childs.Count > 0)
+                            {
+                                Console.WriteLine(operand.Name + "x " + operand.Value);
+                                vSetBaseFormula = await GetOperandChildsAsync(operand, vSetBaseFormula);
+                            }
+                            else
+                            {
+                                var compiledExpression = ep.Parse(operand.Expression);
+                                var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
+                                var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
+                                if (vSetBaseFormula.Where(x => x.VariableName.Equals(operand.Name)).FirstOrDefault() == null)
+                                {
+                                    vSetBaseFormula.RegisterVariable(OperandType.Double, operand.Name, tmp);
+                                }
+                            }
+                        }
+                    }
+                    var ce = ep.Parse(request.baseFormula.Expression);
+                    foreach (var param in vSetBaseFormula)
+                    {
+                        Console.WriteLine(param.VariableName + " " + param.Value);
+                    }
+                    var resul = ce.Evaluate(vSetBaseFormula);
+                    double value = Convert.ToDouble(resul.Pop().GetValue());
+                    listResult.Add(item, value);
+                }
+            );
+                _context.BaseFormulas.Add(request.baseFormula);
+                _context.Operands.AddRange(request.Operands);
+                var check = _context.SaveChanges() > 0;
                 if (check)
                 {
-                    return Ok();
+                    return Ok(listResult);
+                } else
+                {
+                    return BadRequest("Cannot save to db");
                 }
+
             }
             catch (Exception e)
             {
-
+                return BadRequest(e.Message);
             }
-            return BadRequest();
         }
 
         private async Task<VariableSet> GetOperandChildsAsync(Operand parent, VariableSet variableSet)

@@ -28,7 +28,7 @@ namespace SWD391.Controllers
         [HttpPost]
         [Route("login")]
         [Authorize]
-        public async Task<ActionResult<UserResponse>> Login([FromBody] User loginUser)
+        public async Task<ActionResult<UserResponse>> Login()
         {
             var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
@@ -52,6 +52,17 @@ namespace SWD391.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("login-admin/{uid}")]
+        [Authorize]
+        public ActionResult<UserResponse> LoginAdmin(string uid)
+        {
+            string jwt = setRole("admin");
+            UserResponse response = new UserResponse();
+            response.JwtString = jwt;
+            return Ok(response);
+        }
+
         private string setRole(string role)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -59,7 +70,6 @@ namespace SWD391.Controllers
             string authHeader = Request.Headers["Authorization"];
             //remove Bearer prefix
             authHeader = authHeader.Replace("Bearer ", "");
-            var jsonToken = handler.ReadToken(authHeader);
             //cast to jwtlet
             var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
             //add new custome claims
