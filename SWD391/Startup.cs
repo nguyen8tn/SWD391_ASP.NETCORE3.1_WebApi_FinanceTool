@@ -153,6 +153,7 @@ namespace SWD391
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.EnableDependencyInjection();
                 endpoints.Select().Filter().OrderBy().Count().MaxTop(100);
                 endpoints.MapODataRoute("api", "api", GetEdmModel());
             });
