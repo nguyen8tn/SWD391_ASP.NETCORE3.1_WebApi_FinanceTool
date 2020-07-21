@@ -32,6 +32,8 @@ namespace SWD391
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -44,14 +46,16 @@ namespace SWD391
         {
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(
-                    builder =>
-                    {
-                        builder.WithOrigins("http://financial-web-service.azurewebsites.net",
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://financial-web-service.azurewebsites.net",
                                             "https://localhost:5001",
                                             "http://localhost:5000",
-                                            "http://localhost:3000");
-                    });
+                                            "http://localhost:3000")
+                                            .AllowAnyOrigin().AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                  });
             });
             IdentityModelEventSource.ShowPII = true;
             //services.AddApiVersioning(options => options.RegisterMiddleware = false);
@@ -118,6 +122,7 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(MyAllowSpecificOrigins);
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
             //app.UseApiVersioning();
@@ -154,7 +159,6 @@ namespace SWD391
             //    routeBuilder.Select().Filter().OrderBy();
             //    routeBuilder.MapODataServiceRoute("odata", "odata", GetEdmModel());
             //});
-            app.UseCors();
         }
         IEdmModel GetEdmModel()
         {
