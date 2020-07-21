@@ -27,15 +27,11 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("login")]
-        [Authorize]
-        public async Task<ActionResult<UserResponse>> Login()
+        public async Task<ActionResult<UserResponse>> Login([FromBody] User user)
         {
-            var reader = new StreamReader(Request.Body);
-            var body = await reader.ReadToEndAsync();
-            var user = JsonConvert.DeserializeObject<User>(body);
             if (user.Uid == null)
             {
-                return NotFound();
+                return NotFound("This user is not valid");
             }
             User baseUser = await _context.Users.FindAsync(user.Uid);
 
@@ -54,6 +50,7 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("login-admin/{uid}")]
+        [Authorize]
         public ActionResult<UserResponse> LoginAdmin(string uid)
         {
             string jwt = setRole("admin");

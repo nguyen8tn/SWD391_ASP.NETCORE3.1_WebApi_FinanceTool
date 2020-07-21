@@ -25,7 +25,6 @@ namespace SWD391.Service
                 string link = value[i].SelectSingleNode(".//a[1]").Attributes["href"].Value;
                 img += value[i].SelectSingleNode(".//a/div/img").Attributes["src"].Value;
                 listViewDetails.Add(i, link);
-
             }
             List<Task> taskLisk = new List<Task>();
             int c = 0;
