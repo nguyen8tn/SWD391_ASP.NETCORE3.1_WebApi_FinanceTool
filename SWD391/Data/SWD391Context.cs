@@ -28,6 +28,14 @@ namespace SWD391.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //----------------------------------------------
+            modelBuilder.Entity<Bank>().Property<int>(nameof(Bank.Id)).UseIdentityColumn();
+            modelBuilder.Entity<BaseFormula>().Property<int>(nameof(BaseFormula.ID)).UseIdentityColumn();
+            modelBuilder.Entity<Operand>().Property<int>(nameof(Operand.ID)).UseIdentityColumn();
+            modelBuilder.Entity<GroupValue>().Property<int>(nameof(GroupValue.ID)).UseIdentityColumn();
+            modelBuilder.Entity<SavingAccount>().Property<int>(nameof(SavingAccount.ID)).UseIdentityColumn();
+            modelBuilder.Entity<LoanAccount>().Property<int>(nameof(LoanAccount.ID)).UseIdentityColumn();
+            //------------------------------------------
             //modelBuilder.Entity<SavingAccount>().Has(x => new { x.UID, x.BankID });
             modelBuilder.Entity<SavingAccount>().HasOne(x => x.User).WithMany(c => c.SavingAccounts).HasForeignKey(n => n.UID);
             //modelBuilder.Entity<LoanAccount>().HasOne(x => x.User).WithMany(c => c.Accounts).HasForeignKey(n => n.UID);

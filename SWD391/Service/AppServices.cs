@@ -34,25 +34,15 @@ namespace SWD391.Service
                 return check;
             }
 
-            public Task<Bank> GeBankByIDAsync(int id)
+            public async Task<Bank> GeBankByIDAsync(int id)
             {
-                throw new NotImplementedException();
+                return await _context.Banks.Where(x => x.Id == id).FirstOrDefaultAsync();
             }
 
             public async Task<IEnumerable<Bank>> GetBanks()
             {
-                //string nextUrl = "", previousUrl = "";
-                //var result = new PagedCollectionResponse<Bank>();
-                //string filterBy  = filter.Term;
-                //string[] value = filterBy.Split(";");
-                //var listResult = _context.Bank.Where(n => n.Name.Contains(filter.Term))
-                //    .Skip((filter.Page - 1) * filter.Limit).Take(filter.Limit);
-                //if (listResult != null)
-                //{
-                //    result.Items = listResult;
-                //}
-                //throw new NotImplementedException();
-                return _context.Banks.ToList();
+
+                return  await _context.Banks.ToListAsync();
             }
 
             public async Task<bool> UpdateBankAsync(Bank bank)

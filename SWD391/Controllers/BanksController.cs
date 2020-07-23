@@ -45,7 +45,15 @@ namespace SWD391.Controllers
         //[EnableQuery(AllowedQueryOptions = Select | Top | Skip | Count | Filter)]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
-            return await _context.Banks.ToListAsync();
+            try
+            {
+                var list = await _bankService.GetBanks();
+                return Ok(list);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, e);
+            }
         }
 
         // GET: api/Banks/5
@@ -71,7 +79,7 @@ namespace SWD391.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("update/{id}")]
-        public IActionResult PutBank(int id, [FromBody] Bank bank)
+        public async Task<ActionResult<Bank>> PutBank(int id, [FromBody] Bank bank)
         {
             try
             {
@@ -86,19 +94,11 @@ namespace SWD391.Controllers
                 }
                 else
                 {
-                    var baseBank = _context.Banks.FirstOrDefault(i => i.Id.Equals(id));
-                    if (baseBank != null)
+                    if (await _bankService.UpdateBankAsync(bank))
                     {
-                        baseBank.Name = bank.Name;
-                        baseBank.LoanRateSix = bank.LoanRateSix;
-                        baseBank.LoanRateTwelve = bank.LoanRateTwelve;
-                        baseBank.LoanRateTwentyFour = bank.LoanRateTwentyFour;
-                        baseBank.SavingRateSix = bank.SavingRateSix;
-                        baseBank.SavingRateTwelve = bank.SavingRateTwelve;
-                        baseBank.SavingRateTwentyFour = bank.SavingRateTwentyFour;
+                        return Ok(bank);
                     }
-                    _context.SaveChanges();
-                    return Ok(baseBank);
+                    return Conflict();
                 }
             }
             catch (Exception e)
@@ -110,9 +110,8 @@ namespace SWD391.Controllers
         // POST: api/Banks
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost("create/{id}")]
-        [Authorize()]
-        public ActionResult<Bank> PostBank([FromBody] Bank bank)
+        [HttpPost("create")]
+        public async Task<ActionResult<Bank>> PostBank([FromBody] Bank bank)
         {
             try
             {
@@ -120,20 +119,16 @@ namespace SWD391.Controllers
                 //if (!Utils.SWDUtils.isAdmin(authHeader))
                 //{
                 //    return Unauthorized(new { Message = "Access Denied!" });
-                //}
-                _context.Banks.Add(bank);
-                try
+                //}                
+                if (await _bankService.AddBankAsync(bank))
                 {
-                    _context.SaveChanges();
+                    return StatusCode(StatusCodes.Status201Created, bank);
                 }
-                catch (DbUpdateException e)
+                else
                 {
-                    if (BankExists(bank.Id))
-                    {
-                        return Conflict(new { Message = "Duplicated Bank!" });
-                    }
+                    return Conflict();
                 }
-                return CreatedAtAction("GetBank", new { id = bank.Id }, bank);
+
             }
             catch (Exception e)
             {
@@ -143,7 +138,7 @@ namespace SWD391.Controllers
 
         // DELETE: api/Banks/5
         [HttpDelete("delete/{id}")]
-        public ActionResult<Bank> DeleteBank(int id)
+        public async Task<ActionResult<Bank>> DeleteBank(int id)
         {
             try
             {
@@ -152,22 +147,28 @@ namespace SWD391.Controllers
                 //{
                 //    return Unauthorized(new { Message = "Access Denied!" });
                 //} 
-                var bank = _context.Banks.Find(id);
+                var bank = await _bankService.GeBankByIDAsync(id);
                 if (bank == null)
                 {
                     return NotFound();
                 }
-                _context.Banks.Remove(bank);
-                _context.SaveChanges();
-                return bank;
+                else
+                {
+                    if (await _bankService.DeleteBankAsync(bank))
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return Conflict();
+                    }
+                }
             }
             catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e);
             }
         }
-
-        
         private bool BankExists(int id)
         {
             return _context.Banks.Any(e => e.Id == id);
