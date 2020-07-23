@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static SWD391.Models.Calculation;
 using static SWD391.Models.Transaction;
 
 namespace SWD391.Service
@@ -34,13 +35,17 @@ namespace SWD391.Service
             Task<bool> UpdateSavingAccount(SavingAccount obj);
             Task<bool> DeleteSavingAccount(SavingAccount obj);
             Task<SavingAccount> GetSavingAccountByID(string id);
-
         }
 
         public interface ICalculationService
         {
-            Task<string> PushOperant(int formulaID);
-
+            Task<bool> AddOperandAsync(Operand operand);
+            Task<bool> UpdateOperandAsync(Operand operand);
+            Task<bool> DeleteOperandAsync(Operand operand);
+            Task<Operand> FindOperandAsync(int id);
+            Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByUserAsync();
+            Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByAdminAsync();
+            Task<bool> AddBaseFormulaAsync(BaseFormula baseFormula);
         }
     }
 }

@@ -95,6 +95,7 @@ namespace SWD391
                 //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "mobile API", Version = "v1" });
+
             });
 
 
@@ -117,6 +118,8 @@ namespace SWD391
             services.AddScoped(typeof(ITransactionService), typeof(TransactionService));
             //--------------------------------------
             services.AddScoped(typeof(IUserService), typeof(UserService));
+            //
+            services.AddScoped(typeof(ICalculationService), typeof(CalculationService));
             services.AddControllers();
             //------------------------------------
         }

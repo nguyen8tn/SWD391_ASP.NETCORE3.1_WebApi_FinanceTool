@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FunctionZero.ExpressionParserZero.Operands;
 using FunctionZero.ExpressionParserZero.Parser;
 using FunctionZero.ExpressionParserZero.Variables;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using SWD391.Data;
 using SWD391.Models;
 using static SWD391.Models.Calculation;
 using static SWD391.Models.EnumUtils;
+using static SWD391.Service.IAppServices;
 using Operand = SWD391.Models.Calculation.Operand;
 
 namespace SWD391.Controllers
@@ -22,9 +24,11 @@ namespace SWD391.Controllers
     public class CaculationController : ControllerBase
     {
         private readonly SWD391Context _context;
-        public CaculationController(SWD391Context context)
+        private ICalculationService _calculationService;
+        public CaculationController(SWD391Context context, ICalculationService calculationService)
         {
             _context = context;
+            _calculationService = calculationService;
         }
 
         //[Route("parser")]
@@ -44,76 +48,201 @@ namespace SWD391.Controllers
         //}
 
         [HttpGet]
-        [Route("get-all-base-formula")]
+        [Route("get-all-base-formula-by-admin")]
+        [EnableQuery(PageSize = 10)]
         public async Task<ActionResult<IEnumerable<BaseFormula>>> GetAllBaseFormula()
         {
-            IEnumerable<BaseFormula> list = await _context.BaseFormulas.ToListAsync();
-            return Ok(list);
+            try
+            {
+                IEnumerable<BaseFormula> list = await _calculationService.GetAllBaseFormulaByAdminAsync();
+                return Ok(list);
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpGet]
+        [Route("get-all-base-formula-by-user")]
+        public async Task<ActionResult<IEnumerable<BaseFormula>>> GetAllBaseFormulaUser()
+        {
+            try
+            {
+                IEnumerable<BaseFormula> list = await _calculationService.GetAllBaseFormulaByUserAsync();
+                return Ok(list);
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpPost]
+        [Route("add-operand")]
+        public async Task<ActionResult<Operand>> AddOperand([FromBody] Operand operand)
+        {
+            try
+            {
+                var t = await _calculationService.AddOperandAsync(operand);
+                if (t)
+                {
+                    return CreatedAtAction("created operand", operand);
+                }
+                else
+                {
+                    return Conflict();
+                }
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+        [HttpPut]
+        [Route("update-operand")]
+        public async Task<ActionResult<Operand>> UpdateOperand([FromBody] Operand operand)
+        {
+            try
+            {
+                if (_calculationService.FindOperandAsync(operand.ID) != null)
+                {
+                    if (await _calculationService.AddOperandAsync(operand))
+                    {
+                        return NoContent();
+                    } else
+                    {
+                        return Conflict();
+                    }
+                } else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+
+        [HttpDelete]
+        [Route("delete-operand")]
+        public async Task<ActionResult<Operand>> DeteleteOperand([FromBody] Operand operand)
+        {
+            try
+            {
+                var t = await _calculationService.FindOperandAsync(operand.ID);
+                if (t != null)
+                {
+                    if (await _calculationService.DeleteOperandAsync(t))
+                    {
+                        return NoContent();
+                    }
+                    else
+                    {
+                        return Conflict();
+                    }
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
         }
 
         [HttpGet]
         [Route("push-user-input-operand-by-base-formula/{bfID}")]
         public async Task<ActionResult<IEnumerable<Operand>>> PushOperand(int bfID)
         {
-            IEnumerable<Operand> list = await _context.Operands.Where(x => x.BaseFormulaID == bfID).Where(x => x.Type == (int)OperandTypeValue.INPUT).ToListAsync();
-            if (list == null)
+            try
             {
-                return NotFound();
+                IEnumerable<Operand> list = await _context.Operands.Where(x => x.BaseFormulaID == bfID).Where(x => x.Type == (int)OperandTypeValue.INPUT).ToListAsync();
+                if (list == null)
+                {
+                    return NotFound();
+                }
+                return Ok(list);
             }
-            return Ok(list);
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
         }
 
         [HttpPost]
         [Route("calculate-formula/{id}")]
-        public async Task<ActionResult<int>> Caculate([FromBody] List<Operand> operands, int id)
+        public async Task<ActionResult<CalculatonResponse>> Caculate([FromBody] List<Operand> operands, int id)
         {
             //get user input
-            List<Operand> request = operands;
-            BaseFormula baseFormula = await _context.BaseFormulas.Where(x => x.ID == id).FirstOrDefaultAsync();
-            List<Operand> operandT = await _context.Operands
-                .Where(x => x.BaseFormulaID == id
-                && x.Type != (int)OperandTypeValue.INPUT
-                && x.OperandID == x.ID).ToListAsync();
-            //parse inputed value
-            VariableSet vSetBaseFormula = new VariableSet();
-            var ep = new ExpressionParser();
-            foreach (var item in request)
+            try
             {
-                //keyValuesOperand.Add(item.Name, item.Value);
-                vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, item.Value);
-            }
-
-            //-----------------------------
-            foreach (var item in operandT)
-            {
-                if (item.Childs != null)
+                List<Operand> request = operands;
+                BaseFormula baseFormula = await _context.BaseFormulas.Where(x => x.ID == id).FirstOrDefaultAsync();
+                List<Operand> operandT = await _context.Operands
+                    .Where(x => x.BaseFormulaID == id
+                    && x.Type != (int)OperandTypeValue.INPUT
+                    && x.OperandID == x.ID).ToListAsync();
+                //parse inputed value
+                VariableSet vSetBaseFormula = new VariableSet();
+                var ep = new ExpressionParser();
+                foreach (var item in request)
                 {
-                    List<Operand> childs = item.Childs.ToList();
-                    if (childs.Count > 0)
+                    //keyValuesOperand.Add(item.Name, item.Value);
+                    vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, item.Value);
+                }
+
+                //-----------------------------
+                foreach (var item in operandT)
+                {
+                    if (item.Childs != null)
                     {
-                        Console.WriteLine(item.Name + "x " + item.Value);
-                        vSetBaseFormula = await GetOperandChildsAsync(item, vSetBaseFormula);
-                    }
-                    else
-                    {
-                        var compiledExpression = ep.Parse(item.Expression);
-                        var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
-                        var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
-                        if (vSetBaseFormula.Where(x => x.VariableName.Equals(item.Name)).FirstOrDefault() == null)
+                        List<Operand> childs = item.Childs.ToList();
+                        if (childs.Count > 0)
                         {
-                            vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, tmp);
+                            Console.WriteLine(item.Name + "x " + item.Value);
+                            vSetBaseFormula = await GetOperandChildsAsync(item, vSetBaseFormula);
+                        }
+                        else
+                        {
+                            var compiledExpression = ep.Parse(item.Expression);
+                            var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
+                            var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
+                            if (vSetBaseFormula.Where(x => x.VariableName.Equals(item.Name)).FirstOrDefault() == null)
+                            {
+                                vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, tmp);
+                            }
                         }
                     }
                 }
+                var ce = ep.Parse(baseFormula.Expression);
+                foreach (var item in vSetBaseFormula)
+                {
+                    Console.WriteLine(item.VariableName + " " + item.Value);
+                }
+                var resul = ce.Evaluate(vSetBaseFormula);
+                double value = Convert.ToDouble(resul.Pop().GetValue());
+                List<Operand> resultOp = operandT.Where(x => x.OperandID == x.ID).ToList();
+                CalculatonResponse calculatonResponse = new CalculatonResponse();
+                calculatonResponse.Operands = resultOp;
+                calculatonResponse.Result = value;
+                return Ok(calculatonResponse);
             }
-            var ce = ep.Parse(baseFormula.Expression);
-            foreach (var item in vSetBaseFormula)
+            catch (Exception e)
             {
-                Console.WriteLine(item.VariableName + " " + item.Value);
+                var response = new { Message = e.Message };
+                //LogException(e);
+                return StatusCode(500, response);
             }
-            var resul = ce.Evaluate(vSetBaseFormula);
-            double value = Convert.ToDouble(resul.Pop().GetValue());
-            return 0;
         }
 
         [HttpPost]
@@ -187,7 +316,8 @@ namespace SWD391.Controllers
                 if (check)
                 {
                     return Ok(listResult);
-                } else
+                }
+                else
                 {
                     return BadRequest("Cannot save to db");
                 }

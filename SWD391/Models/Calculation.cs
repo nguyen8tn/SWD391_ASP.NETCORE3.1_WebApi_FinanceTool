@@ -45,7 +45,6 @@ namespace SWD391.Models
             public virtual Operand Parent { get; set; }
             [System.Text.Json.Serialization.JsonIgnore]
             public virtual ICollection<Operand> Childs { get; set; }
-
         }
 
         [Table("tbl_base_formula")]

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static SWD391.Models.Calculation;
 
 namespace SWD391.Models
 {
@@ -11,9 +12,10 @@ namespace SWD391.Models
         public abstract IDictionary<string, object> value { get; set; }
     }
 
-    public class TransactionControllerResponse : Response
+    public class CalculatonResponse
     {
-        public override IDictionary<string, object> value { get; set; }
-        public int Test { get; set; }
+        public ICollection<Operand> Operands { get; set; }
+        public double Result { get; set; }
     }
+
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace SWD391.Controllers
                 await _context.SaveChangesAsync();
             }
             UserResponse response = new UserResponse();
-            response.JwtString = await Utils.SWDUtils.setRoleAsync("user", user.Uid);
+            response.JwtString = await Utils.SWDUtils.SetRoleAsync("user", user.Uid);
             return Ok(response);
         }
 
@@ -55,7 +56,7 @@ namespace SWD391.Controllers
         public async Task<ActionResult<UserResponse>> LoginAdmin([FromQuery] string uid)
         {
             UserResponse response = new UserResponse();
-            response.JwtString = await Utils.SWDUtils.setRoleAsync("admin", uid);
+            response.JwtString = await Utils.SWDUtils.SetRoleAsync("admin", uid);
             return Ok(response);
         }
 

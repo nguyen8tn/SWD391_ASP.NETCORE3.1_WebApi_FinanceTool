@@ -96,13 +96,11 @@ namespace SWD391.Controllers
             {
                 var baseAccount= await _transactionService.GetSavingAccountByID(uid);
                 if (baseAccount != null)
-                {
+                {   
                     bool t = await _transactionService.UpdateSavingAccount(account);
                     if (t)
                     {
-                        TransactionControllerResponse response = new TransactionControllerResponse();
                         string[] cars = new string[4] { "Volvo", "BMW", "Ford", "Mazda" };
-                        response.value.Add("obj",cars);
                        return Ok(account);
                     } else
                     {

@@ -17,7 +17,8 @@ namespace SWD391.Utils
         {
 
         }
-        public static async Task<string> setRoleAsync(string role, string uid)
+
+        public static async Task<string> SetRoleAsync(string role, string uid)
         {
             FirebaseApp.Create(new AppOptions()
             {
@@ -42,6 +43,11 @@ namespace SWD391.Utils
                 return false;
             }
             return true;
+        }
+
+        public static void WriteLog(string message)
+        {
+
         }
     }
 }

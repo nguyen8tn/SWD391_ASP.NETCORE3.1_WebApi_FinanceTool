@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static SWD391.Models.Calculation;
 using static SWD391.Service.IAppServices;
 
 namespace SWD391.Service
@@ -141,6 +142,56 @@ namespace SWD391.Service
                 _context.SavingAccounts.Remove(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
+            }
+        }
+
+        public class CalculationService : ICalculationService
+        {
+            private readonly SWD391Context _context;
+            public CalculationService(SWD391Context context)
+            {
+                _context = context;
+            }
+            public async Task<bool> AddBaseFormulaAsync(BaseFormula baseFormula)
+            {
+                _context.BaseFormulas.Add(baseFormula);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByAdminAsync()
+            {
+                    return await _context.BaseFormulas.Include(x => x.Operands).ThenInclude(x => x.GroupValues).ToListAsync();
+            }
+
+            public async Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByUserAsync()
+            {
+                return await _context.BaseFormulas.ToListAsync();
+            }
+
+            public async Task<bool> AddOperandAsync(Operand operand)
+            {
+                _context.Operands.Add(operand);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<bool> UpdateOperandAsync(Operand operand)
+            {
+                _context.Operands.Update(operand);
+                return await _context.SaveChangesAsync() > 0;
+            }
+
+            public async Task<Operand> FindOperandAsync(int id)
+            {
+                var t = await _context.Operands.Where(x => x.ID == id).FirstOrDefaultAsync();
+                return t;
+            }
+
+            public async Task<bool> DeleteOperandAsync(Operand operand)
+            {
+                 _context.Operands.Remove(operand);
+                return await _context.SaveChangesAsync() > 0;
             }
         }
     }

@@ -17,7 +17,6 @@ namespace SWD391.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly SWD391Context _context;
