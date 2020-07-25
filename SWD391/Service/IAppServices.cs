@@ -41,8 +41,12 @@ namespace SWD391.Service
         {
             Task<bool> AddOperandAsync(Operand operand);
             Task<bool> UpdateOperandAsync(Operand operand);
+            Task<bool> DeleteBaseFormulaAsync(BaseFormula baseFormula);
             Task<bool> DeleteOperandAsync(Operand operand);
-            Task<Operand> FindOperandAsync(int id);
+            Task<bool> DeleteGroupValueAsync(GroupValue groupValue);
+            Task<Operand> GetOperandAsync(int id);
+            Task<GroupValue> GetGroupValueAsync(int id);
+            Task<BaseFormula> GetBaseFormulaAsync(int id);
             Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByUserAsync();
             Task<IEnumerable<BaseFormula>> GetAllBaseFormulaByAdminAsync();
             Task<bool> AddBaseFormulaAsync(BaseFormula baseFormula);

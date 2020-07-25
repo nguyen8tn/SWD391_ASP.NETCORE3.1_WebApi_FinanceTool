@@ -31,6 +31,7 @@ namespace SWD391.Models
             public int Sequence { get; set; }
             [Column("base_formula_id")]
             [JsonProperty(PropertyName = "base_formula_id")]
+            [ForeignKey("base_formula_id")]
             public int BaseFormulaID { get; set; }
             public string Expression { get; set; }
             [Column("operand_id")]
@@ -80,6 +81,7 @@ namespace SWD391.Models
             public string Value { get; set; }
             [Column("operand_id")]
             [JsonProperty(PropertyName = "operand_id")]
+            [ForeignKey("operand_id")]
             public int OperandID { get; set; }
             [System.Text.Json.Serialization.JsonIgnore]
             public virtual Operand Operand { get; set; }

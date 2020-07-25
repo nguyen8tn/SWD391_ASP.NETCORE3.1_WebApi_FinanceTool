@@ -14,6 +14,8 @@ using static SWD391.Service.IAppServices;
 using SWD391.Service;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authorization;
+using SWD391.Utils;
+using Microsoft.Extensions.Primitives;
 
 namespace SWD391.Controllers
 {
@@ -41,12 +43,18 @@ namespace SWD391.Controllers
         [HttpGet]
         [EnableQuery(PageSize = 10)]
         [Route("get-bank")]
+        //[Authorize]
         //[Route("", Name = "GetBank")]
         //[EnableQuery(AllowedQueryOptions = Select | Top | Skip | Count | Filter)]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
             try
             {
+                //StringValues authorizationToken;
+                //Request.Headers.TryGetValue("Authorization", out authorizationToken);
+                //authorizationToken.ToString();
+                //string t = authorizationToken.ToString().Replace("Bearer ", "");
+                //await SWDUtils.VerifyTokenIsAdminAsync(t);
                 var list = await _bankService.GetBanks();
                 return Ok(list);
             }
@@ -98,7 +106,7 @@ namespace SWD391.Controllers
                     {
                         return Ok(bank);
                     }
-                    return Conflict();
+                    return BadRequest();
                 }
             }
             catch (Exception e)
@@ -107,9 +115,7 @@ namespace SWD391.Controllers
             }
         }
 
-        // POST: api/Banks
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+
         [HttpPost("create")]
         public async Task<ActionResult<Bank>> PostBank([FromBody] Bank bank)
         {
@@ -126,9 +132,8 @@ namespace SWD391.Controllers
                 }
                 else
                 {
-                    return Conflict();
+                    return BadRequest();
                 }
-
             }
             catch (Exception e)
             {
@@ -160,7 +165,7 @@ namespace SWD391.Controllers
                     }
                     else
                     {
-                        return Conflict();
+                        return BadRequest();
                     }
                 }
             }

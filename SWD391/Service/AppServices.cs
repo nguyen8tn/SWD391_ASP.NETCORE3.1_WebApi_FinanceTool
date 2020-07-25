@@ -172,9 +172,9 @@ namespace SWD391.Service
                 return await _context.SaveChangesAsync() > 0;
             }
 
-            public async Task<Operand> FindOperandAsync(int id)
+            public async Task<Operand> GetOperandAsync(int id)
             {
-                var t = await _context.Operands.Where(x => x.ID == id).FirstOrDefaultAsync();
+                var t = await _context.Operands.Include(x => x.GroupValues).Where(x => x.ID == id).FirstOrDefaultAsync();
                 return t;
             }
 
@@ -182,6 +182,29 @@ namespace SWD391.Service
             {
                  _context.Operands.Remove(operand);
                 return await _context.SaveChangesAsync() > 0;
+            }
+
+            public async Task<bool> DeleteBaseFormulaAsync(BaseFormula baseFormula)
+            {
+                _context.BaseFormulas.Remove(baseFormula);
+                return await _context.SaveChangesAsync() > 0;
+            }
+
+            public async Task<bool> DeleteGroupValueAsync(GroupValue groupValue)
+            {
+                _context.GroupValues.Remove(groupValue);
+                return await _context.SaveChangesAsync() > 0;
+            }
+
+            public async Task<GroupValue> GetGroupValueAsync(int id)
+            {
+                return await _context.GroupValues.FindAsync(id);
+            }
+
+            public async Task<BaseFormula> GetBaseFormulaAsync(int id)
+            {
+                return await _context.BaseFormulas.Include(x => x.Operands)
+                    .ThenInclude(x => x.GroupValues).Where(x => x.ID == id).SingleOrDefaultAsync();
             }
         }
     }

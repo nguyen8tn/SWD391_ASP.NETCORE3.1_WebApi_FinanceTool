@@ -11,6 +11,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using SWD391.Data;
 using SWD391.Models;
+using SWD391.Utils;
 using static SWD391.Models.CustomResponse;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,7 +29,7 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("login")]
-        [Authorize()]
+        [Authorize]
         public async Task<ActionResult<UserResponse>> Login([FromBody] User user)
         {
             if (user.Uid == null)
@@ -46,17 +47,17 @@ namespace SWD391.Controllers
                 await _context.SaveChangesAsync();
             }
             UserResponse response = new UserResponse();
-            response.JwtString = await Utils.SWDUtils.SetRoleAsync("user", user.Uid);
+            response.JwtString = await SWDUtils.SetRoleAsync("user", user.Uid);
             return Ok(response);
         }
 
         [HttpPost]
         [Route("login-admin")]
-        [Authorize()]
+        [Authorize]
         public async Task<ActionResult<UserResponse>> LoginAdmin([FromQuery] string uid)
         {
             UserResponse response = new UserResponse();
-            response.JwtString = await Utils.SWDUtils.SetRoleAsync("admin", uid);
+            response.JwtString = await SWDUtils.SetRoleAsync("admin", uid);
             return Ok(response);
         }
 

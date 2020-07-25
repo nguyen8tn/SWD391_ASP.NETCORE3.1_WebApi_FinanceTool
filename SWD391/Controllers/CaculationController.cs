@@ -81,7 +81,7 @@ namespace SWD391.Controllers
         }
 
         [HttpPost]
-        [Route("add-operand")]
+        [Route("create-operand")]
         public async Task<ActionResult<Operand>> AddOperand([FromBody] Operand operand)
         {
             try
@@ -108,7 +108,7 @@ namespace SWD391.Controllers
         {
             try
             {
-                if (_calculationService.FindOperandAsync(operand.ID) != null)
+                if (_calculationService.GetOperandAsync(operand.ID) != null)
                 {
                     if (await _calculationService.AddOperandAsync(operand))
                     {
@@ -135,7 +135,7 @@ namespace SWD391.Controllers
         {
             try
             {
-                var t = await _calculationService.FindOperandAsync(operand.ID);
+                var t = await _calculationService.GetOperandAsync(operand.ID);
                 if (t != null)
                 {
                     if (await _calculationService.DeleteOperandAsync(t))
@@ -158,7 +158,21 @@ namespace SWD391.Controllers
                 return StatusCode(500, response);
             }
         }
-
+        [HttpDelete]
+        [Route("delete-group-value")]
+        public async Task<ActionResult<Operand>> DeteleteGroupValue([FromBody] GroupValue groupValue)
+        {
+            try
+            {
+                var t = await _calculationService.GetGroupValueAsync(groupValue.ID);
+                return null;
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
         [HttpGet]
         [Route("push-user-input-operand-by-base-formula/{bfID}")]
         public async Task<ActionResult<IEnumerable<Operand>>> PushOperand(int bfID)

@@ -28,6 +28,10 @@ using static SWD391.Service.AppServices;
 using static SWD391.Models.EnumUtils;
 using Microsoft.IdentityModel.Logging;
 using System.Net;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using System.Security.Claims;
+using FirebaseAdmin.Auth;
 
 namespace SWD391
 {
@@ -45,32 +49,34 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
+            FirebaseApp.Create(new AppOptions()
             {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("http://financial-web-service.azurewebsites.net",
-                                            "https://localhost:5001",
-                                            "http://localhost:5000",
-                                            "http://localhost:3000")
-                                            .AllowAnyOrigin().AllowAnyHeader()
-                                            .AllowAnyMethod();
-                                  });
+                Credential = GoogleCredential.FromFile("serviceAccountKey.json")
             });
             //Authentication
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-            {
-                options.Authority = "https://securetoken.google.com/swd391-d8680";
-                options.TokenValidationParameters = new TokenValidationParameters
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidIssuer = "https://securetoken.google.com/swd391-d8680",
-                    ValidateAudience = true,
-                    ValidAudience = "swd391-d8680",
-                    ValidateLifetime = true
-                };
-            });
+                    options.Authority = "https://securetoken.google.com/swd391-d8680";
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "https://securetoken.google.com/swd391-d8680",
+                        ValidateAudience = true,
+                        ValidAudience = "swd391-d8680",
+                        ValidateLifetime = true
+                    };
+                });
+
+            services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+
+                                  });
+                });
             IdentityModelEventSource.ShowPII = true;
             //services.AddApiVersioning(options => options.RegisterMiddleware = false);
             services.AddControllers().AddNewtonsoftJson();
@@ -127,10 +133,6 @@ namespace SWD391
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-            | SecurityProtocolType.Tls11
-            | SecurityProtocolType.Tls12;
             app.UseCors(MyAllowSpecificOrigins);
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
@@ -160,7 +162,6 @@ namespace SWD391
                 endpoints.Select().Filter().OrderBy().Count().MaxTop(100);
                 endpoints.MapODataRoute("api", "api", GetEdmModel());
             });
-
         }
         IEdmModel GetEdmModel()
         {

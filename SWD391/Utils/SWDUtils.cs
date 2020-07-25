@@ -20,10 +20,6 @@ namespace SWD391.Utils
 
         public static async Task<string> SetRoleAsync(string role, string uid)
         {
-            FirebaseApp.Create(new AppOptions()
-            {
-                Credential = GoogleCredential.FromFile("serviceAccountKey.json"),
-            });
             var claims = new Dictionary<string, object>
             {
                 { ClaimTypes.Role, role }
@@ -45,9 +41,21 @@ namespace SWD391.Utils
             return true;
         }
 
-        public static void WriteLog(string message)
+        public static void WriteLog(string stringToken)
         {
+            FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(stringToken);
+        }
 
+        public static async Task<bool> VerifyTokenIsAdminAsync(string stringToken)
+        {
+            var decode = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(stringToken);
+            object role;
+            decode.Claims.TryGetValue(ClaimTypes.Role, out role);
+            if (role.ToString().Equals("admin"))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
