@@ -61,8 +61,8 @@ namespace SWD391.Controllers
         }
 
         [HttpGet]
-        [Route("get-saving-accounts/{id}")]
-        public async Task<ActionResult<IEnumerable<SavingAccount>>> GetSavingAccounts(int id)
+        [Route("get-saving-accounts-by-id/{id}")]
+        public async Task<ActionResult<SavingAccount>> GetSavingAccountsByID(int id)
         {
             try
             {
@@ -79,7 +79,25 @@ namespace SWD391.Controllers
             }
             return NotFound("Somthing Error");
         }
+        [HttpGet]
+        [Route("get-saving-accounts-by-uid/{uid}")]
+        public async Task<ActionResult<SavingAccount>> GetSavingAccountsByUID(string uid)
+        {
+            try
+            {
+                var list = await _transactionService.GetSavingAccountsByUID(uid);
+                if (list != null)
+                {
+                    return Ok(list);
+                }
+            }
+            catch (Exception e)
+            {
 
+                return BadRequest(e.InnerException);
+            }
+            return NotFound("Somthing Error");
+        }
         [HttpPut]
         [Route("update-loan-accounts/{id}")]
         public void UpdateLoanAccounts()

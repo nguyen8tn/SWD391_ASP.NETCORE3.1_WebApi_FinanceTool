@@ -30,11 +30,11 @@ namespace SWD391.Service
 
         public interface ITransactionService
         {
-            Task<IEnumerable<SavingAccount>> GetSavingAccounts();
             Task<bool> AddSavingAccount(SavingAccount obj);
             Task<bool> UpdateSavingAccount(SavingAccount obj);
             Task<bool> DeleteSavingAccount(SavingAccount obj);
             Task<SavingAccount> GetSavingAccountByID(int id);
+            Task<IEnumerable<SavingAccount>> GetSavingAccountsByUID(string uid);
         }
 
         public interface ICalculationService

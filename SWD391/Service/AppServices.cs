@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static SWD391.Models.Calculation;
+using static SWD391.Models.Transaction;
 using static SWD391.Service.IAppServices;
 
 namespace SWD391.Service
@@ -101,26 +102,26 @@ namespace SWD391.Service
                 _context = context;
             }
 
-            public async Task<bool> AddSavingAccount(Transaction.SavingAccount obj)
+            public async Task<bool> AddSavingAccount(SavingAccount obj)
             {
                 await _context.SavingAccounts.AddAsync(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
             }
 
-            public async Task<IEnumerable<Transaction.SavingAccount>> GetSavingAccounts()
+            public async Task<IEnumerable<SavingAccount>> GetSavingAccountsByUID(string uid)
             {
-                var list = await _context.SavingAccounts.ToListAsync();
+                var list = await _context.SavingAccounts.Where(x => x.UID.Equals(uid)).ToListAsync();
                 return list;
             }
 
-            public async Task<Transaction.SavingAccount> GetSavingAccountByID(int id)
+            public async Task<SavingAccount> GetSavingAccountByID(int id)
             {
                 var user = await _context.SavingAccounts.AsNoTracking().Where(i => i.ID == id).FirstOrDefaultAsync();
                 return user;
             }
 
-            public async Task<bool> UpdateSavingAccount(Transaction.SavingAccount obj)
+            public async Task<bool> UpdateSavingAccount(SavingAccount obj)
             {
                 _context.SavingAccounts.Update(obj);
                 bool check = await _context.SaveChangesAsync() > 0;
