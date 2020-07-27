@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD391.Data;
 using SWD391.Models;
@@ -30,20 +31,18 @@ namespace SWD391.Controllers
         {
             try
             {
-                var tmp = _context.SavingAccounts.FirstOrDefault(i => i.ID.Equals(userSaving.ID));
-                if (tmp == null)
+                if (await _transactionService.AddSavingAccount(userSaving))
                 {
-                    SavingAccount t = userSaving;
-                    await _context.SavingAccounts.AddAsync(t);
-                    await _context.SaveChangesAsync();
-                    return Ok(userSaving);
+                    return StatusCode(StatusCodes.Status201Created, userSaving);
                 }
+                else {
+                    return BadRequest();
+                };
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(e.InnerException);
             }
-            return BadRequest();
         }
 
         [HttpPost]
@@ -63,7 +62,7 @@ namespace SWD391.Controllers
 
         [HttpGet]
         [Route("get-saving-accounts/{id}")]
-        public async Task<ActionResult<IEnumerable<SavingAccount>>> GetSavingAccounts(string id)
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> GetSavingAccounts(int id)
         {
             try
             {
@@ -76,7 +75,7 @@ namespace SWD391.Controllers
             catch (Exception e)
             {
 
-                return BadRequest(e.Message);
+                return BadRequest(e.InnerException);
             }
             return NotFound("Somthing Error");
         }
@@ -90,18 +89,17 @@ namespace SWD391.Controllers
 
         [HttpPut]
         [Route("update-saving-accounts/{id}")]
-        public async Task<ActionResult<IEnumerable<SavingAccount>>> UpdateSavingAccounts(string uid, [FromBody] SavingAccount account)
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> UpdateSavingAccounts(int id, [FromBody] SavingAccount account)
         {
             try
             {
-                var baseAccount= await _transactionService.GetSavingAccountByID(uid);
+                var baseAccount= await _transactionService.GetSavingAccountByID(id);
                 if (baseAccount != null)
                 {   
                     bool t = await _transactionService.UpdateSavingAccount(account);
                     if (t)
                     {
-                        string[] cars = new string[4] { "Volvo", "BMW", "Ford", "Mazda" };
-                       return Ok(account);
+                       return StatusCode(StatusCodes.Status200OK,account);
                     } else
                     {
                        return BadRequest("Cannot Update");
@@ -118,21 +116,21 @@ namespace SWD391.Controllers
 
         [HttpPut]
         [Route("delete-saving-accounts/{id}")]
-        public async Task<ActionResult<IEnumerable<SavingAccount>>> DeleteSavingAccounts(string uid, [FromBody] SavingAccount account)
+        public async Task<ActionResult<IEnumerable<SavingAccount>>> DeleteSavingAccounts(int id)
         {
             try
             {
-                var baseUser = await _transactionService.GetSavingAccountByID(uid);
-                if (baseUser != null)
+                var baseAccount = await _transactionService.GetSavingAccountByID(id);
+                if (baseAccount != null)
                 {
-                    bool t = await _transactionService.DeleteSavingAccount(account);
+                    bool t = await _transactionService.DeleteSavingAccount(baseAccount);
                     if (t)
                     {
-                        return Ok(account);
+                        return Ok(baseAccount);
                     }
                     else
                     {
-                        return BadRequest("Cannot Update");
+                        return BadRequest("Cannot Delete");
                     }
 
                 }

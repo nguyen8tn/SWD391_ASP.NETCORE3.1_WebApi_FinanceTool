@@ -30,11 +30,11 @@ namespace SWD391.Models
             [JsonProperty(PropertyName = "sequence")]
             public int Sequence { get; set; }
             [Column("base_formula_id")]
-            [JsonProperty(PropertyName = "base_formula_id")]
+            [JsonProperty(PropertyName = "BaseFormulaID")]
             [ForeignKey("base_formula_id")]
             public int BaseFormulaID { get; set; }
             public string Expression { get; set; }
-            [Column("operand_id")]
+            [Column("OperandID")]
             [JsonProperty(PropertyName = "operand_id")]
             public int OperandID { get; set; }
             //-----------------------------------------------------

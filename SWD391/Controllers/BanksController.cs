@@ -137,7 +137,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.InnerException);
             }
         }
 

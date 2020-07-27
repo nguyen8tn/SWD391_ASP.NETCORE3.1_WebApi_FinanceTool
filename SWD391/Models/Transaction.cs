@@ -20,11 +20,11 @@ namespace SWD391.Models
             [JsonProperty(PropertyName = "id")]
             public int ID { get; set; }
 
-            [JsonProperty(PropertyName = "bank_id")]
+            [JsonProperty(PropertyName = "BankID")]
             [Column("bank_id")]
             public int BankID { get; set; }
 
-            [JsonProperty(PropertyName = "user_id")]
+            [JsonProperty(PropertyName = "UID")]
             [ForeignKey("User")]
             [Column("user_id")]
             public string UID { get; set; }
@@ -37,7 +37,7 @@ namespace SWD391.Models
             [Column("amount")]
             public double Amount { get; set; }
 
-            [JsonProperty(PropertyName = "start_date")]
+            [JsonProperty(PropertyName = "StartDate")]
             [Column("start_date")]
             public DateTime? StartDate { get; set; }
 
@@ -45,19 +45,19 @@ namespace SWD391.Models
             [Column("term")]
             public int Term { get; set; }
 
-            [JsonProperty(PropertyName = "interest_rate")]
+            [JsonProperty(PropertyName = "InterestRate")]
             [Column("interest_rate")]
             public double InterestRate { get; set; }
 
-            [JsonProperty(PropertyName = "free_interest_rate")]
+            [JsonProperty(PropertyName = "FreeInterestRate")]
             [Column("free_interest_rate")]
             public double FreeInterestRate { get; set; }
 
             [Column("calculation_day")]
-            [JsonProperty(PropertyName = "calculation_day")]
+            [JsonProperty(PropertyName = "CalculationDay")]
             public int CalculationDay { get; set; }
 
-            [JsonProperty(PropertyName = "created_date")]
+            [JsonProperty(PropertyName = "CreatedDate")]
             [Column("created_date")]
             [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
             public DateTime? CreatedDate { get; set; }

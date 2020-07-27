@@ -114,9 +114,9 @@ namespace SWD391.Service
                 return list;
             }
 
-            public async Task<Transaction.SavingAccount> GetSavingAccountByID(string id)
+            public async Task<Transaction.SavingAccount> GetSavingAccountByID(int id)
             {
-                var user = await _context.SavingAccounts.FirstOrDefaultAsync(i => i.ID.Equals(id));
+                var user = await _context.SavingAccounts.AsNoTracking().Where(i => i.ID == id).FirstOrDefaultAsync();
                 return user;
             }
 

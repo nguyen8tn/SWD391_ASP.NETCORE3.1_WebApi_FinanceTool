@@ -34,7 +34,7 @@ namespace SWD391.Service
             Task<bool> AddSavingAccount(SavingAccount obj);
             Task<bool> UpdateSavingAccount(SavingAccount obj);
             Task<bool> DeleteSavingAccount(SavingAccount obj);
-            Task<SavingAccount> GetSavingAccountByID(string id);
+            Task<SavingAccount> GetSavingAccountByID(int id);
         }
 
         public interface ICalculationService
