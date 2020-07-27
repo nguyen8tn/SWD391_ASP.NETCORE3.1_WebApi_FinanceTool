@@ -13,11 +13,11 @@ namespace SWD391.Models
     public class Transaction
     {
         [Table("tbl_user_saving")]
-        public class SavingAccount
+        public class Account
         {
             [Key]
             [Column("id")]
-            [JsonProperty(PropertyName = "id")]
+            [JsonProperty(PropertyName = "ID")]
             public int ID { get; set; }
 
             [JsonProperty(PropertyName = "BankID")]
@@ -29,11 +29,11 @@ namespace SWD391.Models
             [Column("user_id")]
             public string UID { get; set; }
 
-            [JsonProperty(PropertyName = "name")]
+            [JsonProperty(PropertyName = "Name")]
             [Column("name")]
             public string Name { get; set; }
 
-            [JsonProperty(PropertyName = "amount")]
+            [JsonProperty(PropertyName = "Amount")]
             [Column("amount")]
             public double Amount { get; set; }
 
@@ -41,7 +41,7 @@ namespace SWD391.Models
             [Column("start_date")]
             public DateTime? StartDate { get; set; }
 
-            [JsonProperty(PropertyName = "term")]
+            [JsonProperty(PropertyName = "Term")]
             [Column("term")]
             public int Term { get; set; }
 
@@ -61,6 +61,8 @@ namespace SWD391.Models
             [Column("created_date")]
             [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
             public DateTime? CreatedDate { get; set; }
+            [JsonProperty(PropertyName = "Type")]
+            public int Type { get; set; }
 
             [System.Text.Json.Serialization.JsonIgnore]
             public virtual User User { get; set; }

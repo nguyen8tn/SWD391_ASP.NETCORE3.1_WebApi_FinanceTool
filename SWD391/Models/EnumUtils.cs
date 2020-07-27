@@ -15,6 +15,12 @@ namespace SWD391.Models
             STATIC = 4
         }
 
+        public enum AccountType : int
+        {
+            SAVING = 1,
+            LOAN = 2
+        }
+
         public class DBConnection
         {
             public string ConStr { get; set; }

@@ -23,7 +23,7 @@ namespace SWD391.Data
         public DbSet<Explanation> Explanations { get; set; }
         public DbSet<BaseFormula> BaseFormulas { get; set; }
         public DbSet<GroupValue> GroupValues { get; set; }
-        public DbSet<SavingAccount> SavingAccounts { get; set; }
+        public DbSet<Account> Accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,14 +33,11 @@ namespace SWD391.Data
             modelBuilder.Entity<BaseFormula>().Property<int>(nameof(BaseFormula.ID)).UseIdentityColumn();
             modelBuilder.Entity<Operand>().Property<int>(nameof(Operand.ID)).UseIdentityColumn();
             modelBuilder.Entity<GroupValue>().Property<int>(nameof(GroupValue.ID)).UseIdentityColumn();
-            modelBuilder.Entity<SavingAccount>().Property<int>(nameof(SavingAccount.ID)).UseIdentityColumn();
+            modelBuilder.Entity<Account>().Property<int>(nameof(Account.ID)).UseIdentityColumn();
             modelBuilder.Entity<LoanAccount>().Property<int>(nameof(LoanAccount.ID)).UseIdentityColumn();
             //------------------------------------------
-            //modelBuilder.Entity<SavingAccount>().Has(x => new { x.UID, x.BankID });
-            modelBuilder.Entity<SavingAccount>().HasOne(x => x.User).WithMany(c => c.SavingAccounts).HasForeignKey(n => n.UID);
-            //modelBuilder.Entity<LoanAccount>().HasOne(x => x.User).WithMany(c => c.Accounts).HasForeignKey(n => n.UID);
-
-            modelBuilder.Entity<User>().HasMany(x => x.LoanAccounts);
+            //modelBuilder.Entity<Account>().Has(x => new { x.UID, x.BankID });
+            modelBuilder.Entity<Account>().HasOne(x => x.User).WithMany(c => c.Accounts).HasForeignKey(n => n.UID);
             modelBuilder.Entity<BaseFormula>().HasMany(x => x.Operands);
             modelBuilder.Entity<Operand>().HasMany(x => x.Childs).WithOne(e => e.Parent)
                 .HasForeignKey(e => e.OperandID);

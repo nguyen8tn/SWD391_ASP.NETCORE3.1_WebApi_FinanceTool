@@ -24,8 +24,6 @@ namespace SWD391.Models
         [JsonProperty(PropertyName = "createdDate")]
         public DateTime? CreatedDate { get; set; }
         [System.Text.Json.Serialization.JsonIgnore]
-        public virtual ICollection<SavingAccount> SavingAccounts { get; set; }
-        [System.Text.Json.Serialization.JsonIgnore]
-        public virtual ICollection<LoanAccount> LoanAccounts { get; set; }
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }
