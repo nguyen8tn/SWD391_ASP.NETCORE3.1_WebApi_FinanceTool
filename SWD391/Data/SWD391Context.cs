@@ -34,7 +34,6 @@ namespace SWD391.Data
             modelBuilder.Entity<Operand>().Property<int>(nameof(Operand.ID)).UseIdentityColumn();
             modelBuilder.Entity<GroupValue>().Property<int>(nameof(GroupValue.ID)).UseIdentityColumn();
             modelBuilder.Entity<Account>().Property<int>(nameof(Account.ID)).UseIdentityColumn();
-            modelBuilder.Entity<LoanAccount>().Property<int>(nameof(LoanAccount.ID)).UseIdentityColumn();
             //------------------------------------------
             //modelBuilder.Entity<Account>().Has(x => new { x.UID, x.BankID });
             modelBuilder.Entity<Account>().HasOne(x => x.User).WithMany(c => c.Accounts).HasForeignKey(n => n.UID);

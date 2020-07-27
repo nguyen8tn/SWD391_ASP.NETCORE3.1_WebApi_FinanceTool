@@ -27,7 +27,7 @@ namespace SWD391.Controllers
 
         [HttpPost]
         [Route("add-account")]
-        public async Task<ActionResult<Account>> AddSavingAccount([FromBody] Account userSaving)
+        public async Task<ActionResult<Account>> AddAccount([FromBody] Account userSaving)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace SWD391.Controllers
 
         [HttpGet]
         [Route("get-account-by-id/{id}")]
-        public async Task<ActionResult<Account>> GetSavingAccountsByID(int id)
+        public async Task<ActionResult<Account>> GetAccountsByID(int id)
         {
             try
             {
@@ -63,11 +63,11 @@ namespace SWD391.Controllers
 
                 return BadRequest(e.InnerException);
             }
-            return NotFound("Somthing Error");
+            return NotFound("Not Found This Account");
         }
         [HttpGet]
         [Route("get-accounts-by-uid-type/{uid}")]
-        public async Task<ActionResult<Account>> GetSavingAccountsByUID(string uid, [FromQuery] int type)
+        public async Task<ActionResult<Account>> GetAccountsByUID(string uid, [FromQuery] int type)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace SWD391.Controllers
 
         [HttpPut]
         [Route("update-account/{id}")]
-        public async Task<ActionResult<IEnumerable<Account>>> UpdateSavingAccounts(int id, [FromBody] Account account)
+        public async Task<ActionResult<IEnumerable<Account>>> UpdateAccounts(int id, [FromBody] Account account)
         {
             try
             {
@@ -116,7 +116,7 @@ namespace SWD391.Controllers
 
         [HttpDelete]
         [Route("delete-account/{id}")]
-        public async Task<ActionResult<IEnumerable<Account>>> DeleteSavingAccounts(int id)
+        public async Task<ActionResult<IEnumerable<Account>>> DeleteAccounts(int id) 
         {
             try
             {

@@ -12,7 +12,7 @@ namespace SWD391.Models
 {
     public class Transaction
     {
-        [Table("tbl_user_saving")]
+        [Table("tbl_account")]
         public class Account
         {
             [Key]
@@ -68,14 +68,6 @@ namespace SWD391.Models
             public virtual User User { get; set; }
             [System.Text.Json.Serialization.JsonIgnore]
             public virtual Bank Bank { get; set; }
-        }
-
-        [Table("tbl_user_loan")]
-        public class LoanAccount
-        {
-            [Key]
-            [Column("id")]
-            public int ID { get; set; }
         }
 
         public class AccountTransaction
