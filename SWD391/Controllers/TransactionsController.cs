@@ -114,7 +114,7 @@ namespace SWD391.Controllers
             return NotFound("Somthing Error");
         }
 
-        [HttpPut]
+        [HttpDelete]
         [Route("delete-saving-accounts/{id}")]
         public async Task<ActionResult<IEnumerable<SavingAccount>>> DeleteSavingAccounts(int id)
         {
