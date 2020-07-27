@@ -34,8 +34,8 @@ namespace SWD391.Models
             [ForeignKey("base_formula_id")]
             public int BaseFormulaID { get; set; }
             public string Expression { get; set; }
-            [Column("OperandID")]
-            [JsonProperty(PropertyName = "operand_id")]
+            [Column("operand_id")]
+            [JsonProperty(PropertyName = "OperandID")]
             public int OperandID { get; set; }
             //-----------------------------------------------------
             [System.Text.Json.Serialization.JsonIgnore]
