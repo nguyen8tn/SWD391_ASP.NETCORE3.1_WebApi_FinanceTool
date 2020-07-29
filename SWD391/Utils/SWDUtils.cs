@@ -22,8 +22,9 @@ namespace SWD391.Utils
         {
             var claims = new Dictionary<string, object>
             {
-                { ClaimTypes.Role, role }
+                { "role", role }
             };
+            await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(uid, claims);
             var token = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(uid, claims);
             return token;
         }
@@ -46,14 +47,19 @@ namespace SWD391.Utils
             FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(stringToken);
         }
 
-        public static async Task<bool> VerifyTokenIsAdminAsync(string stringToken)
+        public static async Task<bool> VerifyTokenAsync(string stringToken, string baseRole)
         {
-            var decode = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(stringToken);
+            UserRecord user = await FirebaseAuth.DefaultInstance.GetUserAsync("Z1x73oyUWnZvlrPRPOHtKZ5ZK2K3");
+            Console.WriteLine(user.CustomClaims["role"]);
+            stringToken = stringToken.Replace("Bearer ", "");
+            FirebaseToken decoded = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(stringToken);
             object role;
-            decode.Claims.TryGetValue(ClaimTypes.Role, out role);
-            if (role.ToString().Equals("admin"))
+            if (decoded.Claims.TryGetValue("role", out role))
             {
-                return true;
+                if (role.ToString().Equals(baseRole))
+                {
+                    return true;
+                }
             }
             return false;
         }

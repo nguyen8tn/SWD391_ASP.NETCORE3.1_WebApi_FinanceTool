@@ -61,7 +61,7 @@ namespace SWD391.Controllers
             catch (Exception e)
             {
 
-                return BadRequest(e.InnerException);
+                return BadRequest(new { Message = e.Message });
             }
             return NotFound("Not Found This Account");
         }
@@ -79,8 +79,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-
-                return BadRequest(e.InnerException);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
             return NotFound("Somthing Error");
         }
@@ -109,7 +108,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
             return NotFound("Somthing Error");
         }
@@ -137,7 +136,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
             return NotFound("Somthing Error");
         }

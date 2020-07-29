@@ -16,6 +16,7 @@ using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authorization;
 using SWD391.Utils;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
 
 namespace SWD391.Controllers
 {
@@ -41,26 +42,24 @@ namespace SWD391.Controllers
 
         // GET: api/Banks
         [HttpGet]
-        [EnableQuery(PageSize = 10)]
+        [EnableQuery]
         [Route("get-bank")]
         //[Authorize]
-        //[Route("", Name = "GetBank")]
-        //[EnableQuery(AllowedQueryOptions = Select | Top | Skip | Count | Filter)]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
             try
             {
-                //StringValues authorizationToken;
-                //Request.Headers.TryGetValue("Authorization", out authorizationToken);
-                //authorizationToken.ToString();
-                //string t = authorizationToken.ToString().Replace("Bearer ", "");
-                //await SWDUtils.VerifyTokenIsAdminAsync(t);
+                //var accessToken = Request.Headers[HeaderNames.Authorization];
+                //if (!await SWDUtils.VerifyTokenAsync(accessToken, "admin"))
+                //{
+                //    return Unauthorized();
+                //}
                 var list = await _bankService.GetBanks();
                 return Ok(list);
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = e.Message});
             }
         }
 
@@ -79,13 +78,11 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
 
         // PUT: api/Banks/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("update/{id}")]
         public async Task<ActionResult<Bank>> PutBank(int id, [FromBody] Bank bank)
         {
@@ -111,7 +108,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = e.Message });
             }
         }
 
@@ -137,7 +134,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e.InnerException);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = e.Message });
             }
         }
 
@@ -171,7 +168,7 @@ namespace SWD391.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, e);
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = e.Message });
             }
         }
         private bool BankExists(int id)

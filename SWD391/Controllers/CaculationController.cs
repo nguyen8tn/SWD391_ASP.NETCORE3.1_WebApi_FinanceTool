@@ -216,28 +216,32 @@ namespace SWD391.Controllers
                 }
 
                 //-----------------------------
-                foreach (var item in operandT)
+                if (operandT != null)
                 {
-                    if (item.Childs != null)
+                    foreach (var item in operandT)
                     {
-                        List<Operand> childs = item.Childs.ToList();
-                        if (childs.Count > 0)
+                        if (item.Childs != null)
                         {
-                            Console.WriteLine(item.Name + "x " + item.Value);
-                            vSetBaseFormula = await GetOperandChildsAsync(item, vSetBaseFormula);
-                        }
-                        else
-                        {
-                            var compiledExpression = ep.Parse(item.Expression);
-                            var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
-                            var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
-                            if (vSetBaseFormula.Where(x => x.VariableName.Equals(item.Name)).FirstOrDefault() == null)
+                            List<Operand> childs = item.Childs.ToList();
+                            if (childs.Count > 0)
                             {
-                                vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, tmp);
+                                Console.WriteLine(item.Name + "x " + item.Value);
+                                vSetBaseFormula = await GetOperandChildsAsync(item, vSetBaseFormula);
+                            }
+                            else
+                            {
+                                var compiledExpression = ep.Parse(item.Expression);
+                                var resultStack = compiledExpression.Evaluate(vSetBaseFormula);
+                                var tmp = Convert.ToDouble(resultStack.Pop().GetValue());
+                                if (vSetBaseFormula.Where(x => x.VariableName.Equals(item.Name)).FirstOrDefault() == null)
+                                {
+                                    vSetBaseFormula.RegisterVariable(OperandType.Double, item.Name, tmp);
+                                }
                             }
                         }
                     }
-                }
+                }  
+                
                 var ce = ep.Parse(baseFormula.Expression);
                 foreach (var item in vSetBaseFormula)
                 {
@@ -245,6 +249,7 @@ namespace SWD391.Controllers
                 }
                 var resul = ce.Evaluate(vSetBaseFormula);
                 double value = Convert.ToDouble(resul.Pop().GetValue());
+                operandT.AddRange(request);
                 List<Operand> resultOp = operandT.Where(x => x.OperandID == x.ID).ToList();
                 CalculatonResponse calculatonResponse = new CalculatonResponse();
                 calculatonResponse.Operands = resultOp;
