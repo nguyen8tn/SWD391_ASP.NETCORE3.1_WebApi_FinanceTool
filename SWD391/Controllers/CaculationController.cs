@@ -254,13 +254,14 @@ namespace SWD391.Controllers
                 CalculatonResponse calculatonResponse = new CalculatonResponse();
                 calculatonResponse.Operands = resultOp;
                 calculatonResponse.Result = value;
+                GoogleSheetData.AddEntries(baseFormula.Name);
                 return Ok(calculatonResponse);
             }
             catch (Exception e)
             {
                 var response = new { Message = e.Message };
                 //LogException(e);
-                return StatusCode(500, response);
+                return StatusCode(StatusCodes.Status500InternalServerError, response);
             }
         }
 

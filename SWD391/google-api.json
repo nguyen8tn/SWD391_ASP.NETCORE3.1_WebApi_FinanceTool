@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "ringed-griffin-278301",
+  "private_key_id": "0d6ebf038655f97537f6e8e158c5be5ddfbbbf8c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDAH8GfpfGh7hXl\nJO+zNw1k2P69YLq8cQhHMimkdqYVkE765OuJZ70FW3KBsKLWm5jI96xrEZ8yLywk\n2srSwJcBw5nP5nL6koc9Vp6j8XsSB6yb7aM59HDYXGzup6W7VE4ZNRmepjoYIZi2\nX/56wDsOXA50mNLyKl5yRGiYrBJCZafFkVRta2xgIWfOzGzs4M75tHHiFY0piSi+\n3YQHQAF51aDPe4hSV2rwWdDTJSw3FLxWVdWQTS5JWXxVVGAk3KVIWZXXT7B+ECJp\niRmEWeCHPoYXcoypvX9TYyVapikm95iTnl3XpElF34L+vf97fnqbccNMqkkkjXtY\n1bbUyx6zAgMBAAECggEAHRVxmTpkvs+s7thNlQKze13CCmcXPamayDRWy3fOopsK\n6b43zcAvhB0Y03sq23QIh/u+VSMAx3cOprGcXJUdBv5WTXukUjxWTrnLICRRLiSN\nQ7mQqRhQ8N/k+afVVetoOzannzWou7hyRsF3Y5uwFPdolMwBuvkg/QlQEDSUOwqm\n9oaenxnodUjysyLErCsmjdpsJK2Kcj6P4zexv2zlYvDlKTbvW4wgib18eAJMS6nW\nKOtFuXvc1Ba4Ngbqa4/BdfsaE+8OQp9ZkwMG8cZ7p1CHPX04wjeDuB2fGaPjZNv2\nkznGAqGPskB6iDRJpLD9ZOelvNoSwUvWppDtxVGW0QKBgQD3EzkbYksgfdiW6lJs\n0sRHktCMhrCG6WXq0wfOsQgrutHWDj70PsByvXlh/WDVt7/ofASsuBKrEjTEBUJf\nLPRSNuMGhZv3uzTDvna3qhyfVL5mCN4/xY1GHIhaVWeYi35MWvEwWIGHFSNREVJA\nLcCrH1KnEmDf9NwiCnWsHKsOCQKBgQDHEGJ2kSna73xLiTjZwlTQc9gnv2sjAGbl\na3IUoJgP9r5tuqd4ESA3zwPhzeCCAPDQ/rB2XZ6LyJXp6hB+4P05m0rzJ0BSZ9S7\nroowzfITtdZfiLJuz+ZFdHCNkyPbZLV2C2hTs6HBtHWTUcA7pylIBHEzl9Sh/zEo\nHRMp26x12wKBgQCgWoOHuEWV8tctKysPocLtyOU9LvVGuhgBTbEVfmQVLYyeZmSJ\nVGjGjx5GcJH2YulUU5kdF+JV0N0aE2e+KYjwCttREknlgESAfg7CqM8mwXNI+Zx0\nuxwzUrVUG3W+1VnE6Ij8nZSDPT7MkHdXW9pdtViJQi5Ja7urBCrW50xFMQKBgAOF\n/rgqiZsecgzEOQVhsy6dXk4VzUepUijtZe+HiCmALI60pxIw+2kBeQgeJMMoURrh\n5y2xKoU+36hsRC56vQCwBvuWzkSnIdTQmhGTE53Vsh2uxbnAZEsGbJeU6yWO+sdE\nHGye2VYcY5hf8g8cPlbP/VD0dwcHBU+4dAZhpQPRAoGATdFuNqy57atLJd2WYnEQ\nMFSSKTTBvwrY2+17dLDQlhKqbhqE/xfPrR5ByaKCC7gZ3hOg0z3U0J1Ky4kiU3MR\n0I/iY5NyY0/gJciQfRN9xN2ks8FPPa5zHJUJ1oicqPUPtpHxVlAG8upzYFyfJjsw\nQnYPFxn1QJ/eKxdakuxQwIQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sheet-277@ringed-griffin-278301.iam.gserviceaccount.com",
+  "client_id": "111714960752263843985",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sheet-277%40ringed-griffin-278301.iam.gserviceaccount.com"
+}
