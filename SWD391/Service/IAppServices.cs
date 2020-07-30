@@ -39,11 +39,13 @@ namespace SWD391.Service
 
         public interface ICalculationService
         {
-            Task<bool> AddOperandAsync(Operand operand);
-            Task<bool> UpdateOperandAsync(Operand operand);
+            Task<bool> AddOperandsAsync(List<Operand> operand);
+            Task<bool> UpdateOperandsAsync(List<Operand> operand);
             Task<bool> DeleteBaseFormulaAsync(BaseFormula baseFormula);
-            Task<bool> DeleteOperandAsync(Operand operand);
-            Task<bool> DeleteGroupValueAsync(GroupValue groupValue);
+            Task<bool> DeleteOperandsAsync(List<Operand> operand);
+            Task<bool> AddGroupValuesAsync(List<GroupValue> groupValue);
+            Task<bool> UpdateGroupValuesAsync(List<GroupValue> groupValue);
+            Task<bool> DeleteGroupValuesAsync(List<GroupValue> groupValue);
             Task<Operand> GetOperandAsync(int id);
             Task<GroupValue> GetGroupValueAsync(int id);
             Task<BaseFormula> GetBaseFormulaAsync(int id);

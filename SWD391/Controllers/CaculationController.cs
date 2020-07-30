@@ -81,12 +81,12 @@ namespace SWD391.Controllers
         }
 
         [HttpPost]
-        [Route("create-operand")]
-        public async Task<ActionResult<Operand>> AddOperand([FromBody] Operand operand)
+        [Route("create-operands")]
+        public async Task<ActionResult<List<Operand>>> AddOperand([FromBody] List<Operand> operand)
         {
             try
             {
-                var t = await _calculationService.AddOperandAsync(operand);
+                var t = await _calculationService.AddOperandsAsync(operand);
                 if (t)
                 {
                     return CreatedAtAction("created operand", operand);
@@ -102,25 +102,65 @@ namespace SWD391.Controllers
                 return StatusCode(500, response);
             }
         }
-        [HttpPut]
-        [Route("update-operand")]
-        public async Task<ActionResult<Operand>> UpdateOperand([FromBody] Operand operand)
+        [HttpPost]
+        [Route("create-group-values")]
+        public async Task<ActionResult<List<GroupValue>>> AddGroupValue([FromBody] List<GroupValue> groupValues)
         {
             try
             {
-                if (_calculationService.GetOperandAsync(operand.ID) != null)
+                var t = await _calculationService.AddGroupValuesAsync(groupValues);
+                if (t)
                 {
-                    if (await _calculationService.AddOperandAsync(operand))
-                    {
-                        return NoContent();
-                    } else
+                    return CreatedAtAction("created group-value", groupValues);
+                }
+                else
+                {
+                    return Conflict();
+                }
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+        [HttpPut]
+        [Route("update-operands")]
+        public async Task<ActionResult<List<Operand>>> UpdateOperand([FromBody] List<Operand> operand)
+        {
+            try
+            {
+                for (int i = 0; i < operand.Count; i++)
+                {
+                    if (_calculationService.GetOperandAsync(operand[i].ID) == null)
                     {
                         return Conflict();
                     }
-                } else
-                {
-                    return NotFound();
                 }
+                await _calculationService.AddOperandsAsync(operand);
+                return Ok(operand);
+            }
+            catch (Exception e)
+            {
+                var response = new { Message = e.Message };
+                return StatusCode(500, response);
+            }
+        }
+        [HttpPut]
+        [Route("update-group-values")]
+        public async Task<ActionResult<List<Operand>>> UpdateGroupValue([FromBody] List<GroupValue> groupValues)
+        {
+            try
+            {
+                for (int i = 0; i < groupValues.Count; i++)
+                {
+                    if (_calculationService.GetGroupValueAsync(groupValues[i].ID) == null)
+                    {
+                        return Conflict();
+                    }
+                }
+                await _calculationService.AddGroupValuesAsync(groupValues);
+                return Ok(groupValues);
             }
             catch (Exception e)
             {
@@ -130,27 +170,20 @@ namespace SWD391.Controllers
         }
 
         [HttpDelete]
-        [Route("delete-operand")]
-        public async Task<ActionResult<Operand>> DeteleteOperand([FromBody] Operand operand)
+        [Route("delete-operands")]
+        public async Task<ActionResult<List<Operand>>> DeteleteOperand([FromBody] List<Operand> operand)
         {
             try
             {
-                var t = await _calculationService.GetOperandAsync(operand.ID);
-                if (t != null)
+                for (int i = 0; i < operand.Count; i++)
                 {
-                    if (await _calculationService.DeleteOperandAsync(t))
-                    {
-                        return NoContent();
-                    }
-                    else
+                    if (_calculationService.GetOperandAsync(operand[i].ID) == null)
                     {
                         return Conflict();
                     }
                 }
-                else
-                {
-                    return NotFound();
-                }
+                await _calculationService.DeleteOperandsAsync(operand);
+                return Ok(operand);
             }
             catch (Exception e)
             {
@@ -158,14 +191,22 @@ namespace SWD391.Controllers
                 return StatusCode(500, response);
             }
         }
+
         [HttpDelete]
-        [Route("delete-group-value")]
-        public async Task<ActionResult<Operand>> DeteleteGroupValue([FromBody] GroupValue groupValue)
+        [Route("delete-group-values")]
+        public async Task<ActionResult<Operand>> DeteleteGroupValue([FromBody] List<GroupValue> groupValue)
         {
             try
             {
-                var t = await _calculationService.GetGroupValueAsync(groupValue.ID);
-                return null;
+                for (int i = 0; i < groupValue.Count; i++)
+                {
+                    if (_calculationService.GetOperandAsync(groupValue[i].ID) == null)
+                    {
+                        return Conflict();
+                    }
+                }
+                await _calculationService.DeleteGroupValuesAsync(groupValue);
+                return Ok(groupValue);
             }
             catch (Exception e)
             {
@@ -240,8 +281,8 @@ namespace SWD391.Controllers
                             }
                         }
                     }
-                }  
-                
+                }
+
                 var ce = ep.Parse(baseFormula.Expression);
                 foreach (var item in vSetBaseFormula)
                 {

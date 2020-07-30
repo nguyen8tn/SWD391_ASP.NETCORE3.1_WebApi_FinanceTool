@@ -32,6 +32,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using System.Security.Claims;
 using FirebaseAdmin.Auth;
+using SWD391.Utils;
 
 namespace SWD391
 {
@@ -94,17 +95,25 @@ namespace SWD391
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
-            {
-                c.OperationFilter<CustomSwaggerAttribute>();
-
+            {             
                 //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "mobile API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
+                c.OperationFilter<AuthorizeCheckOperationFilter>();
+                c.OperationFilter<ODataSwagger>();
             });
-
-
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddOData();
             services.AddMvcCore(options =>
@@ -147,6 +156,7 @@ namespace SWD391
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+             
             });
 
 

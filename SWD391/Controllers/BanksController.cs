@@ -21,7 +21,6 @@ using Microsoft.Net.Http.Headers;
 namespace SWD391.Controllers
 {
     [Route("api/[controller]")]
-    //[ApiExplorerSettings(IgnoreApi = false)]
     public class BanksController : ControllerBase
     {
         private readonly SWD391Context _context;
@@ -32,19 +31,19 @@ namespace SWD391.Controllers
             _context = context;
             _bankService = service;
         }
-        [HttpGet("crawl-list-bank")]
-        public async Task<ActionResult<List<HtmlNode>>> CrawlBankPage()
-        {
-            WebScrapingService scrapingService = new WebScrapingService();
-            var value = await scrapingService.CrawlListBankInMainAsync("https://thebank.vn/danh-ba-ngan-hang.html");
-            return Ok();
-        }
+
+        //[HttpGet("crawl-list-bank")]
+        //public async Task<ActionResult<List<HtmlNode>>> CrawlBankPage()
+        //{
+        //    WebScrapingService scrapingService = new WebScrapingService();
+        //    var value = await scrapingService.CrawlListBankInMainAsync("https://thebank.vn/danh-ba-ngan-hang.html");
+        //    return Ok();
+        //}
 
         // GET: api/Banks
         [HttpGet]
-        [EnableQuery]
         [Route("get-bank")]
-        //[Authorize]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<Bank>>> GetBank()
         {
             try

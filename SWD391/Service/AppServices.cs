@@ -161,16 +161,16 @@ namespace SWD391.Service
                 return await _context.BaseFormulas.ToListAsync();
             }
 
-            public async Task<bool> AddOperandAsync(Operand operand)
+            public async Task<bool> AddOperandsAsync(List<Operand> operand)
             {
-                _context.Operands.Add(operand);
+                await _context.Operands.AddRangeAsync(operand);
                 bool check = await _context.SaveChangesAsync() > 0;
                 return check;
             }
 
-            public async Task<bool> UpdateOperandAsync(Operand operand)
+            public async Task<bool> UpdateOperandsAsync(List<Operand> operand)
             {
-                _context.Operands.Update(operand);
+                _context.Operands.UpdateRange(operand);
                 return await _context.SaveChangesAsync() > 0;
             }
 
@@ -180,9 +180,9 @@ namespace SWD391.Service
                 return t;
             }
 
-            public async Task<bool> DeleteOperandAsync(Operand operand)
+            public async Task<bool> DeleteOperandsAsync(List<Operand> operand)
             {
-                 _context.Operands.Remove(operand);
+                 _context.Operands.RemoveRange(operand);
                 return await _context.SaveChangesAsync() > 0;
             }
 
@@ -192,9 +192,9 @@ namespace SWD391.Service
                 return await _context.SaveChangesAsync() > 0;
             }
 
-            public async Task<bool> DeleteGroupValueAsync(GroupValue groupValue)
+            public async Task<bool> DeleteGroupValuesAsync(List<GroupValue> groupValue)
             {
-                _context.GroupValues.Remove(groupValue);
+                _context.GroupValues.RemoveRange(groupValue);
                 return await _context.SaveChangesAsync() > 0;
             }
 
@@ -207,6 +207,19 @@ namespace SWD391.Service
             {
                 return await _context.BaseFormulas.Include(x => x.Operands)
                     .ThenInclude(x => x.GroupValues).Where(x => x.ID == id).SingleOrDefaultAsync();
+            }
+
+            public async Task<bool> AddGroupValuesAsync(List<GroupValue> groupValue)
+            {
+                await _context.GroupValues.AddRangeAsync(groupValue);
+                bool check = await _context.SaveChangesAsync() > 0;
+                return check;
+            }
+
+            public async Task<bool> UpdateGroupValuesAsync(List<GroupValue> groupValue)
+            {
+                _context.GroupValues.UpdateRange(groupValue);
+                return await _context.SaveChangesAsync() > 0;
             }
         }
     }
