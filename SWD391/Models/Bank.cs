@@ -34,5 +34,7 @@ namespace SWD391.Models
         [Column("created_date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? CreatedDate { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public virtual ICollection<Rate> Rates { get; set; }
     }
 }
